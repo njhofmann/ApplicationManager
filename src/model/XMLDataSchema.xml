@@ -4,10 +4,11 @@
     <xs:element name="application-manager">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="area" minOccurs="0">
+                <xs:element name="area" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
                             <xs:element name="area-name" type="xs:string"/>
+                            <xs:element name="id" type="xs:integer"/>
                             <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1"/>
                             <xs:element name="event" minOccurs="0" maxOccurs="unbounded">
                                 <xs:complexType>
@@ -23,7 +24,6 @@
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
-                <xs:element name="id" type="xs:integer"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
