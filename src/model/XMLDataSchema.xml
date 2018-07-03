@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            elementFormDefault="qualified">
-    <xs:element name="ApplicationManager">
+    <xs:element name="application-manager">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="area" type="xs:string" minOccurs="0">
+                <xs:element name="area" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="areaname" type="xs:string"/>
+                            <xs:element name="area-name" type="xs:string"/>
                             <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1"/>
-                            <xs:element name="event" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+                            <xs:element name="event" minOccurs="0" maxOccurs="unbounded">
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element name="eventname" type="xs:string"/>
-                                        <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1"/>
-                                        <xs:element name="dateandtime" type="xs:dateTime"/>
-                                        <xs:element name="location" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="event-name" type="xs:string"/>
+                                        <xs:element name="id" type="xs:integer"/>
+                                        <xs:element name="description" type="xs:string"/>
+                                        <xs:element name="date-time" type="xs:dateTime"/>
+                                        <xs:element name="location" type="xs:string"/>
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
+                <xs:element name="id" type="xs:integer"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
