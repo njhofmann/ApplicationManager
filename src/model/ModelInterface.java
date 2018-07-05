@@ -24,7 +24,7 @@ public interface ModelInterface {
    * existing area with given area's id, then updates all fields that were changed.
    * @param data data of existing area to update
    * @throws IllegalArgumentException if given data has associated id of a area not added to this
-   *         AM's data model, if given data is null, or if given name is empty
+   *         AM's data model, if given data is null, if given name is empty
    */
   void editArea(AreaData data) throws IllegalArgumentException;
 

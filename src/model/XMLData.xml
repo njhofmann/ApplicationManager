@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<application-manager
-        xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="XMLDataSchema.xml">
+<?xml version="1.0" encoding="UTF-8"?>
+<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="XMLDataSchema.xml">
 
-</application-manager>
+</root>
