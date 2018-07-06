@@ -15,8 +15,10 @@ public class RunApplicationManager {
    * @param args configurations to start this program up with
    */
   public static void main(String[] args) {
-    ModelInterface model = new ModelImpl();
-    AreaData areaData = new AreaDataImpl("nate", "stuff to do");
+
+    AreaData areaData = new AreaDataImpl(-1, "nate", "stuff to do");
+    String filePath = "/home/nhofmann/Personal Java Projects/ApplicationManager/src/model/XMLData.xml";
+    ModelInterface model = new ModelImpl(filePath);
     model.addArea(areaData);
   }
 }
