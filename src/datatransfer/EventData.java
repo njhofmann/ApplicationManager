@@ -12,7 +12,9 @@ public interface EventData {
   int getAssociatedAreaId();
 
   /**
-   * Returns the unique id of the event that this EventData represents.
+   * Returns the unique id of the event that this EventData represents. A negative id represents
+   * that this event is brand new and is being added to its assocaited area for the first time,
+   * otherwise it represents data
    * @return associated event's unique id
    */
   int getEventId();
@@ -39,8 +41,8 @@ public interface EventData {
 
   /**
    * Returns the date and time of this EventData's associated event as a String array in form of
-   * year, month, day, hour, and minute.
+   * year, month, day, hour, and minute. Will be of length 6 long.
    * @return date and time of this associated event
    */
-  String[] getEventDateAndTime();
+  int[] getEventDateAndTime();
 }

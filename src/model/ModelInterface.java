@@ -11,6 +11,18 @@ import datatransfer.EventData;
 public interface ModelInterface {
 
   /**
+   * Opens this ApplicationManager's data modek, should only be called before all other relevant
+   * methods need to be called (other than closeModelData()).
+   */
+  void openModelData();
+
+  /**
+   * Closes this ApplicationManager's data model, should only be called after all other relevant
+   * methods have been called (other than openModelData()).
+   */
+  void closeModelData();
+
+  /**
    * Adds a new "area of interest" to this ApplicationManager's data model. Data has a unique
    * integer id, a name, and a optional description.
    * @param data area of interest to add
@@ -31,7 +43,7 @@ public interface ModelInterface {
   /**
    * Adds a new event to an existing "area of interest" in this ApplicationManger's data model.
    * Has id of its associated area, unique integer id, a name, an optional location, an optional
-   * description, and a date & time. Unique integer id is -1 to indicate it is a new event.
+   * description, and a date & time. Unique integer id is negative to indicate it is a new event.
    * @param data data of event to add to some existing area
    * @throws IllegalArgumentException if given event is associated with a nonexistent area, it
    *         has a nonnegative integer id, has event id of an already existing event in its
@@ -49,4 +61,11 @@ public interface ModelInterface {
    * given data is null, or if given name or date / time is empty
    */
   void editEvent(EventData data) throws IllegalArgumentException;
+
+  /**
+   * Outputs the data of this ApplicationManager's data model as a String for other storage,
+   * testing, etc.
+   * @return data of AM's data model as a String.
+   */
+  String outputModelDataAsString();
 }

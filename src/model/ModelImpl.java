@@ -10,6 +10,8 @@ import org.jdom2.output.XMLOutputter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 import datatransfer.AreaData;
@@ -23,38 +25,114 @@ import datatransfer.EventData;
 public class ModelImpl implements ModelInterface {
 
   /**
-   * File
+   * The file path to this ModelImpl's associated XML model data file.
    */
   private final String modelDataFilePath;
 
   /**
    * Latest version of this ModelImpl's model data as a readable document.
    */
-  private Document modelData;
+  private Document modelData = new Document();
 
   /**
-   * Default constructor for this ModelImpl, takes in a Writer to display the results of any method
-   * calls on this MI / changes to this MI's model data.
+   * Default constructor for this ModelImpl, takes in a file path to read data from and make changes
+   * to as  the results of any method calls on this MI / changes to this MI's model data.
    * @param modelDataFilePath file path of the model data this ModelImpl is suppose to read from and
    *                          change as needed
-   * @throws IllegalArgumentException if given input file path is null or empty
+   * @throws IllegalArgumentException if given input file path is null, empty, or doesn't exist
    */
   public ModelImpl(String modelDataFilePath) {
-    if (modelDataFilePath == null || modelDataFilePath.isEmpty()) {
-      throw new IllegalArgumentException("Given input file path can't be null or empty!");
+    if (modelDataFilePath == null) {
+      throw new IllegalArgumentException("Given input file path can't be null!");
+    }
+    else if (modelDataFilePath.isEmpty()) {
+      throw new IllegalArgumentException("Given file path can't be empty!");
+    }
+    else if (Files.notExists(Paths.get(modelDataFilePath))) {
+      throw new IllegalArgumentException("Given file path doesn't exist!");
     }
 
     this.modelDataFilePath = modelDataFilePath;
-    updateModelData();
-    writeToWriter();
+    openModelData();
+    closeModelData();
   }
 
   /**
-   * Updates this's ModelImpl's modelData by rereading from the associated inputFilePath.
+   * Retursn true if this ModelImpl's data model contains an Area Element that has the input id
+   * as its own id.
+   * @param id unique id to Area Elements for
+   * @return if this data model contains an Area Element whose own id is the input id
    */
-  private void updateModelData() {
+  private boolean containsAreaElement(int id) {
+    // Get the root child of the XML file and all its inner children.
+    Element root = modelData.getRootElement();
+    List<Element> areas = root.getChildren();
+
+    for (Element area : areas) {
+      if (area.getAttributeValue("id").equals(Integer.toString(id))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Returns the Area Element with the associated input id.
+   * @param id id of the Area Element to return
+   * @return Area element that has input id as its own id
+   * @throws IllegalArgumentException if there is no Area Element in this model data that has the
+   *                                  associated id
+   */
+  private Element getAreaElement(int id) {
+    // Get the root child of the XML file and all its inner children.
+    Element root = modelData.getRootElement();
+    List<Element> areas = root.getChildren();
+
+    for (Element area : areas) {
+      if (area.getAttributeValue("id").equals(Integer.toString(id))) {
+        return area;
+      }
+    }
+    throw new IllegalArgumentException("No area with the given id has been added to this model data!");
+  }
+
+  /**
+   * Checks if a given AreaData is valid, i.e. it is non-null and its name is not empty.
+   * @param data AreaData to check
+   * @throws IllegalArgumentException if the given Area data is null or has an empty name
+   */
+  private void validAreaData(AreaData data) {
+    if (data == null) {
+      throw new IllegalArgumentException("Given data can't be null");
+    }
+    else if (data.getAreaName().isEmpty()){
+      throw new IllegalArgumentException("Given data must have a non-empty name!");
+    }
+  }
+
+  /**
+   * Checks if a given EventData is valid - i.e. it is non-null, its name is not empty, and its
+   * associated Area has been added to this model data - else throws an IllegalArgumentException.
+   * @param data EventData to check is valid
+   * @throws IllegalArgumentException if given EventData is non-null, its name is not empty, and
+   * its associated Area has been added to this model data
+   */
+  private void validEventData(EventData data) {
+    if (data == null) {
+      throw new IllegalArgumentException("Given data can't be null");
+    }
+    else if (data.getEventName().isEmpty()){
+      throw new IllegalArgumentException("Given data must have a non-empty name!");
+    }
+    else if (!containsAreaElement(data.getAssociatedAreaId())) {
+      throw new IllegalArgumentException("The area this event is associated with has not been" +
+              "added to this model data!");
+    }
+  }
+
+  @Override
+  public void openModelData() {
     try{
-      // Open associated XML data file for parsing.
       File xmlFile = new File(modelDataFilePath);
       SAXBuilder saxBuilder = new SAXBuilder();
       modelData = saxBuilder.build(xmlFile);
@@ -67,7 +145,8 @@ public class ModelImpl implements ModelInterface {
     }
   }
 
-  private void writeToWriter() {
+  @Override
+  public void closeModelData() {
     try {
       XMLOutputter xmlOutputter = new XMLOutputter();
       xmlOutputter.setFormat(Format.getPrettyFormat());
@@ -78,29 +157,13 @@ public class ModelImpl implements ModelInterface {
     }
   }
 
-  /**
-   * Checks if a given AreaData is valid, i.e. it is non-null and its name is not empty.
-   * @param data AreaData to check
-   */
-  private void validAreaData(AreaData data) {
-    if (data == null) {
-      throw new IllegalArgumentException("Given data can't be null");
-    }
-    else if (data.getAreaName().isEmpty()){
-      throw new IllegalArgumentException("Given data must have a non-empty name!");
-    }
-  }
-
   @Override
   public void addArea(AreaData data) throws IllegalArgumentException {
-
     validAreaData(data);
 
     if (data.getAreaId() >= 0) {
       throw new IllegalArgumentException("Given data's id must be negative to signal it is a new area!");
     }
-
-    updateModelData();
 
     // Get the root child of the XML file and all its inner children.
     Element root = modelData.getRootElement();
@@ -112,10 +175,8 @@ public class ModelImpl implements ModelInterface {
     String newAreaName = data.getAreaName();
     String newAreaDesp = data.getAreaDescription();
 
-    for (Element area : areas) {
-      if (area.getAttributeValue("id").equals(newAreaID)) {
-        throw new IllegalArgumentException("An element with this id has already been added to the model!");
-      }
+    if (containsAreaElement(newAreaID)) {
+      throw new IllegalArgumentException("An element with this id has already been added to the model!");
     }
 
     // Create a new area element to add to the model from input data.
@@ -132,7 +193,6 @@ public class ModelImpl implements ModelInterface {
 
     // Add new area element to model data
     root.addContent(newArea);
-    writeToWriter();
   }
 
   @Override
@@ -143,31 +203,13 @@ public class ModelImpl implements ModelInterface {
       throw new IllegalArgumentException("Can't edit a new area!");
     }
 
-    // Open associated XML data file for parsing.
-    updateModelData();
-
-    // Get the root child of the XML file and all its inner children.
-    Element root = modelData.getRootElement();
-    List<Element> areas = root.getChildren();
-
     // Get data from input data class.
     int editAreaId = data.getAreaId();
     String editAreaName = data.getAreaName();
     String editAreaDesp = data.getAreaDescription();
 
-    // Variable
-    Element areaToEdit = new Element("blank");
-
-    for (Element area : areas) {
-      if (area.getAttributeValue("id").equals(Integer.toString(editAreaId))) {
-        areaToEdit = area;
-        break;
-      }
-    }
-
-    if (areaToEdit.getName().equals("blank")) {
-      throw new IllegalArgumentException("No area with the given id has been added to this model data!");
-    }
+    // Grab area element to edit
+    Element areaToEdit = getAreaElement(editAreaId);
 
     // Updates the found area with a its new name and description
     Element areaToEditName = areaToEdit.getChild("name");
@@ -175,17 +217,67 @@ public class ModelImpl implements ModelInterface {
 
     Element areaToEditDesp = areaToEdit.getChild("description");
     areaToEditDesp.setText(editAreaDesp);
-
-    writeToWriter();
   }
 
   @Override
   public void addEvent(EventData data) throws IllegalArgumentException {
+    validEventData(data);
 
+    // Pull out event data
+    int areaID = data.getAssociatedAreaId();
+    int eventID = data.getEventId();
+    String eventName = data.getEventName();
+    String eventDesp = data.getEventDescription();
+    String eventLocation = data.getEventLocation();
+    int[] eventDateAndTime = data.getEventDateAndTime();
+
+    if (eventID >= 0) {
+      throw new IllegalArgumentException("Given event data doesn't represent a new event!");
+    }
+
+    Element associatedArea = getAreaElement(areaID);
+
+    Element newEvent = new Element("event");
+    newEvent.setAttribute("id", Integer.toString(associatedArea.getChildren("event").size()) + 1);
+
+    Element eventNameElement = new Element("name");
+    eventNameElement.setText(eventName);
+    newEvent.addContent(eventNameElement);
+
+    Element eventDespElement = new Element("description");
+    eventDespElement.setText(eventDesp);
+    newEvent.addContent(eventDespElement);
+
+    Element eventDateAndTimeElement = new Element("date-time");
+    int year = eventDateAndTime[0];
+    int month = eventDateAndTime[1];
+    int day = eventDateAndTime[2];
+    int hour = eventDateAndTime[3];
+    int minute = eventDateAndTime[4];
+    int convention = eventDateAndTime[5];
+
+    if (convention == 1) {
+      hour += 12;
+    }
+
+    String result = String.format("%02d-%02d-%02dT%02d:%02d:00", year, month, day, hour, minute);
+    eventDateAndTimeElement.addContent(result);
+    newEvent.addContent(eventDateAndTimeElement);
+
+    Element eventLocationElement = new Element("location");
+    eventDespElement.setText(eventLocation);
+    newEvent.addContent(eventLocationElement);
+
+    associatedArea.addContent(newEvent);
   }
 
   @Override
   public void editEvent(EventData data) throws IllegalArgumentException {
 
+  }
+
+  @Override
+  public String outputModelDataAsString() {
+    return new XMLOutputter().outputString(modelData);
   }
 }
