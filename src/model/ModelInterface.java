@@ -24,10 +24,11 @@ public interface ModelInterface {
 
   /**
    * Adds a new "area of interest" to this ApplicationManager's data model. Data has a unique
-   * integer id, a name, and a optional description.
+   * integer id, a name, and a optional description. ID of AreaData should be 0 to signal it is a
+   * new AreaData.
    * @param data area of interest to add
-   * @throws IllegalArgumentException if given area's id number shares an id number with an already
-   *         existing area, if given data is null, or if given name is empty
+   * @throws IllegalArgumentException if given area's ID isn't zero, if given data is null, or if
+   * given name is empty
    */
   void addArea(AreaData data) throws IllegalArgumentException;
 

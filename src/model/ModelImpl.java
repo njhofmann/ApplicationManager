@@ -84,6 +84,9 @@ public class ModelImpl implements ModelInterface {
    *                                  associated id
    */
   private Element getAreaElement(int id) {
+    if (id == 0) {
+      throw new IllegalArgumentException("Can't retrieve an AreaData with an ID of 0!");
+    }
     // Get the root child of the XML file and all its inner children.
     Element root = modelData.getRootElement();
     List<Element> areas = root.getChildren();
@@ -220,15 +223,10 @@ public class ModelImpl implements ModelInterface {
     Element root = modelData.getRootElement();
     List<Element> areas = root.getChildren();
 
-
     // Get data from input data class.
     int newAreaID = data.getAreaId();
     String newAreaName = data.getAreaName();
     String newAreaDesp = data.getAreaDescription();
-
-    if (containsAreaElement(newAreaID)) {
-      throw new IllegalArgumentException("An element with this id has already been added to the model!");
-    }
 
     // Create a new area element to add to the model from input data.
     Element newArea = new Element("area");

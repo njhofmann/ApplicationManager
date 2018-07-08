@@ -1,13 +1,7 @@
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Scanner;
 
 import datatransfer.AreaData;
 import datatransfer.AreaDataImpl;
@@ -18,105 +12,310 @@ import static org.junit.Assert.assertEquals;
 
 public class ModelImplTests {
 
-  String filePath = "/home/nhofmann/Personal Java Projects/ApplicationManager/tests/XMLTestData.xml";
+  String filePath = new File(".").getAbsolutePath() + "/tests/XMLTestData.xml";
   ModelInterface model;
-  AreaData areaData;
-
-  private String xmlTestDataToString() {
-
-    File file = new File(filePath);
-    StringBuilder fileContents = new StringBuilder((int)file.length());
-    Scanner scanner = null;
-    try {
-      scanner = new Scanner(file);
-    }
-    catch (FileNotFoundException e) {
-      e.printStackTrace();
-    }
-    String lineSeparator = System.getProperty("line.separator");
-
-    try {
-      while(scanner.hasNextLine()) {
-        fileContents.append(scanner.nextLine() + lineSeparator);
-      }
-      return fileContents.toString();
-    } finally {
-      scanner.close();
-    }
-  }
-
-  private void resetXMLTestData() {
-    try {
-      File newXMLTestData = new File(filePath);
-      String defaultText = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
-              "<root>\r\n" +
-              "\r\n" +
-              "</root>\r\n";
-      Files.write(Paths.get(filePath), defaultText.getBytes());
-    }
-    catch (IOException e) {
-      // pass
-    }
-  }
+  AreaData areaData = new AreaDataImpl(0, "test", "testing");
 
   @Before
   public void init() {
     model = new ModelImpl(filePath);
   }
 
-  @After
-  public void end() {
-   resetXMLTestData();
-  }
-
   // Invalid models...
-  // ...null file path
-
-  // ...empty file path
-
-  // Invalid model method calls...
-
-  // Adding a new area to a model
-  @Test
-  public void addNewArea() {
-    assertEquals(xmlTestDataToString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<root />\n");
-
-    areaData = new AreaDataImpl(-1, "chemistry", "high school chemistry class");
-    model.addArea(areaData);
-
-    assertEquals(xmlTestDataToString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<root>\n" +
-            "  <area id=\"1\">\n" +
-            "    <name>chemistry</name>\n" +
-            "    <description>high school chemistry class</description>\n" +
-            "  </area>\n" +
-            "</root>\n");
+  // ...null filepath
+  @Test(expected = IllegalArgumentException.class)
+  public void nullFilePath() {
+    model = new ModelImpl(null);
   }
-  // Editing an area that has already been added to a model
-  @Test
-  public void editPrevAddedArea() {
-    assertEquals(xmlTestDataToString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<root />\n");
 
-    areaData = new AreaDataImpl(-1, "chemistry", "high school chemistry class");
-    model.addArea(areaData);
-    assertEquals(xmlTestDataToString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<root>\n" +
-            "  <area id=\"1\">\n" +
-            "    <name>chemistry</name>\n" +
-            "    <description>high school chemistry class</description>\n" +
-            "  </area>\n" +
-            "</root>\n");
-
-    AreaData newAreaData = new AreaDataImpl(1, "history", "my chemistry class is now my history class");
-    model.editArea(newAreaData);
-    assertEquals(xmlTestDataToString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<root>\n" +
-            "  <area id=\"1\">\n" +
-            "    <name>history</name>\n" +
-            "    <description>my chemistry class is now my history class</description>\n" +
-            "  </area>\n" +
-            "</root>\n");
+  // ...empty filepath
+  @Test(expected = IllegalArgumentException.class)
+  public void emptyFilePath() {
+    model = new ModelImpl("");
   }
+
+  // ...invalid filepath
+  @Test(expected = IllegalArgumentException.class)
+  public void invalidFilePath() {
+    model = new ModelImpl("src/controller/XMLData.xml");
+  }
+
+  // Invalid adding AreaDatas operations...
+  // ...adding null AreaData
+  @Test(expected = IllegalArgumentException.class)
+  public void addingNullAreaData() {
+    model.addArea(null);
+  }
+
+  // ...adding AreaData with negative ID
+  // ...adding AreaData with positive ID
+  @Test(expected = IllegalArgumentException.class)
+  public void addingAreaDataWithPostitiveID() {
+    areaData = new AreaDataImpl(1, "test", "testing");
+    model.addArea(areaData);
+  }
+
+  // Valid adding AreaData operations...
+  // ...adding one AreaData with no description
+  @Test
+  public void addingAreaDataNoDesp() {
+    assertEquals(model.outputModelDataAsString(),
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root />\r\n");
+    areaData = new AreaDataImpl(0, "test", "");
+    model.addArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>test</name><description></description></area></root>\r\n");
+  }
+
+  // ...adding one AreaData with a description
+  @Test
+  public void addingAreaDataWithDesp() {
+    assertEquals(model.outputModelDataAsString(),
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+                    "<root />\r\n");
+
+    areaData = new AreaDataImpl(0, "test", "testing");
+    model.addArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>test</name><description>testing</description></area>" +
+            "</root>\r\n");
+  }
+
+  // ...adding same AreaData multiple times
+  @Test
+  public void addingSameAreaData() {
+    assertEquals(model.outputModelDataAsString(),
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+                    "<root />\r\n");
+
+    model.addArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>test</name><description>testing</description></area>" +
+            "</root>\r\n");
+
+    model.addArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>test</name><description>testing</description></area>" +
+            "<area id=\"2\"><name>test</name><description>testing</description></area>" +
+            "</root>\r\n");
+  }
+
+  // ...adding different AreaData
+  @Test
+  public void addingDifferentAreaDatas() {
+    assertEquals(model.outputModelDataAsString(),
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+                    "<root />\r\n");
+
+    model.addArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>test</name><description>testing</description></area>" +
+            "</root>\r\n");
+
+    areaData = new AreaDataImpl(0, "banana", "fruit");
+    model.addArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>test</name><description>testing</description></area>" +
+            "<area id=\"2\"><name>banana</name><description>fruit</description></area>" +
+            "</root>\r\n");
+
+    areaData = new AreaDataImpl(0, "pen", "");
+    model.addArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>test</name><description>testing</description></area>" +
+            "<area id=\"2\"><name>banana</name><description>fruit</description></area>" +
+            "<area id=\"3\"><name>pen</name><description></description></area>" +
+            "</root>\r\n");
+  }
+
+
+  // Invalid editing AreaData operations...
+  // ...trying to edit with a null AreaData
+  @Test(expected = IllegalArgumentException.class)
+  public void editingWithNullAreaData() {
+    model.editArea(null);
+  }
+
+  // ...trying to edit with a AreaData whose ID is zero
+  @Test(expected = IllegalArgumentException.class)
+  public void editingWithAreaDataWithPosID() {
+    areaData = new AreaDataImpl(0, "test", "testing");
+    model.editArea(areaData);
+  }
+
+  // ...trying to edit an AreaData who hasn't been added to the model
+  @Test(expected = IllegalArgumentException.class)
+  public void editingUnaddedAreaData() {
+    areaData = new AreaDataImpl(3, "test", "testing");
+    model.editArea(areaData);
+  }
+
+  // Valid editing AreaData operations...
+  // ...editing one AreaData
+  @Test
+  public void editingOneAreaData() {
+    assertEquals(model.outputModelDataAsString(),
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+                    "<root />\r\n");
+
+    model.addArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>test</name><description>testing</description></area>" +
+            "</root>\r\n");
+
+    areaData = new AreaDataImpl(1, "changed", "changed");
+    model.editArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+                    "<root><area id=\"1\"><name>changed</name><description>changed" +
+            "</description></area></root>\r\n");
+  }
+
+  // ...editing same AreaDatas
+  @Test
+  public void editingSameAreaDatas() {
+    assertEquals(model.outputModelDataAsString(),
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+                    "<root />\r\n");
+
+    model.addArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>test</name><description>testing</description></area>" +
+            "</root>\r\n");
+
+    model.addArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>test</name><description>testing</description></area>" +
+            "<area id=\"2\"><name>test</name><description>testing</description></area>" +
+            "</root>\r\n");
+
+    areaData = new AreaDataImpl(1, "pen", "");
+    model.editArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>pen</name><description></description></area>" +
+            "<area id=\"2\"><name>test</name><description>testing</description></area></root>\r\n");
+
+    areaData = new AreaDataImpl(2, "die", "hippie");
+    model.editArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>pen</name><description></description></area>" +
+            "<area id=\"2\"><name>die</name><description>hippie</description></area></root>\r\n");
+  }
+
+  // ...editing different AreaDatas
+  @Test
+  public void editingMultipleDiffAreaDatas() {
+    assertEquals(model.outputModelDataAsString(),
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+                    "<root />\r\n");
+
+    model.addArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>test</name><description>testing</description></area>" +
+            "</root>\r\n");
+
+    areaData = new AreaDataImpl(0, "banana", "fruit");
+    model.addArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>test</name><description>testing</description></area>" +
+            "<area id=\"2\"><name>banana</name><description>fruit</description></area>" +
+            "</root>\r\n");
+
+    areaData = new AreaDataImpl(0, "pen", "");
+    model.addArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>test</name><description>testing</description></area>" +
+            "<area id=\"2\"><name>banana</name><description>fruit</description></area>" +
+            "<area id=\"3\"><name>pen</name><description></description></area>" +
+            "</root>\r\n");
+
+    areaData = new AreaDataImpl(1, "first", "");
+    model.editArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>first</name><description></description></area>" +
+            "<area id=\"2\"><name>banana</name><description>fruit</description></area>" +
+            "<area id=\"3\"><name>pen</name><description></description></area>" +
+            "</root>\r\n");
+
+    areaData = new AreaDataImpl(2, "second", "");
+    model.editArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>first</name><description></description></area>" +
+            "<area id=\"2\"><name>second</name><description></description></area>" +
+            "<area id=\"3\"><name>pen</name><description></description></area>" +
+            "</root>\r\n");
+
+    areaData = new AreaDataImpl(3, "third", "");
+    model.editArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>first</name><description></description></area>" +
+            "<area id=\"2\"><name>second</name><description></description></area>" +
+            "<area id=\"3\"><name>third</name><description></description></area>" +
+            "</root>\r\n");
+
+  }
+
+  // ...editing to induce no changes
+  @Test
+  public void noChangesFromEdit() {
+    assertEquals(model.outputModelDataAsString(),
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+                    "<root />\r\n");
+
+    model.addArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>test</name><description>testing</description></area>" +
+            "</root>\r\n");
+
+    areaData = new AreaDataImpl(1, "changed", "changed");
+    model.editArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>changed</name><description>changed" +
+            "</description></area></root>\r\n");
+
+    model.editArea(areaData);
+    model.editArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>changed</name><description>changed" +
+            "</description></area></root>\r\n");
+  }
+
+  // ...multiple edits on same Area
+  @Test
+  public void multipleEdits() {
+    assertEquals(model.outputModelDataAsString(),
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+                    "<root />\r\n");
+
+    model.addArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>test</name><description>testing</description></area>" +
+            "</root>\r\n");
+
+    areaData = new AreaDataImpl(1, "changed", "changed");
+    model.editArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>changed</name><description>changed" +
+            "</description></area></root>\r\n");
+
+    areaData = new AreaDataImpl(1, "again", "");
+    model.editArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>again</name><description>" +
+            "</description></area></root>\r\n");
+
+    areaData = new AreaDataImpl(1, "finally", "over");
+    model.editArea(areaData);
+    assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<root><area id=\"1\"><name>finally</name><description>over" +
+            "</description></area></root>\r\n");
+  }
+
+  // Invalid adding Event operations...
+  // ...adding a null EventData
+  // ...adding an EventData with a positive ID
+  // ...adding an EventData whose AreaData has an ID of 0
+  // ...adding a EventData to an AreaData that hasn't been added to this model
+  //
+
 }
