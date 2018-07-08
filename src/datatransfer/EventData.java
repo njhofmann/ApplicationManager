@@ -1,8 +1,9 @@
 package datatransfer;
 
 /**
- * Represents the data of some event of some "area of interest" being sent from a view to a model
- * to process into this ApplicationManager's data model.
+ * Represents the data of some event of a "Area of interest" being sent from a view to a model
+ * to process into this ApplicationManager's data model, or from a model to a view to be displayed
+ * to a user.
  */
 public interface EventData {
   /**

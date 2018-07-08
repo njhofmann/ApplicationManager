@@ -97,10 +97,11 @@ public class ModelImpl implements ModelInterface {
   }
 
   /**
-   *
-   * @param areaID
-   * @param eventID
-   * @return
+   * Returns if true there is an Event whose ID is the given event ID, whose associated Area has
+   * an ID matching given Area ID, in this model data.
+   * @param areaID id of the desired event's associated area
+   * @param eventID id of the associated event
+   * @return if such an event has been added to this model data
    */
   private boolean containsEventElement(int areaID, int eventID) {
     Element associatedArea = getAreaElement(areaID);
@@ -115,11 +116,15 @@ public class ModelImpl implements ModelInterface {
   }
 
   /**
-   *
-   * @param areaID
-   * @param eventID
-   * @return
-   * @throws IllegalArgumentException
+   * Returns the Event whose ID is the given event ID, whose associated Area has an ID matching
+   * given Area ID.
+   * @param areaID id of the desired event's associated area
+   * @param eventID id the desired event
+   * @return Event whose id matches given Event ID, and whose associated Area has an ID matching
+   *         given Area ID
+   * @throws IllegalArgumentException if there is no Area in this model data with an id matching
+   *         given AreaID, or if the matching Area has no Event with an ID matching the given
+   *         Event ID
    */
   private Element getEventElement(int areaID, int eventID) {
     Element associatedArea = getAreaElement(areaID);
