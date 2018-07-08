@@ -1,19 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="XMLDataSchema.xml">
-  <area id="1">
-    <name>nate</name>
-    <description>stuff to do</description>
-    <event id="01">
-      <name>code</name>
-      <description />
-      <date-time>2017-07-23T11:55:00</date-time>
-      <location />
-    </event>
-    <event id="11">
-      <name>write</name>
-      <description>my house</description>
-      <date-time>2018-05-01T13:03:00</date-time>
-      <location />
-    </event>
-  </area>
+
 </root>

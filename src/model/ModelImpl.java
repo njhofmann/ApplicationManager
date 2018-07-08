@@ -97,7 +97,46 @@ public class ModelImpl implements ModelInterface {
   }
 
   /**
-   * Checks if a given AreaData is valid, i.e. it is non-null and its name is not empty.
+   *
+   * @param areaID
+   * @param eventID
+   * @return
+   */
+  private boolean containsEventElement(int areaID, int eventID) {
+    Element associatedArea = getAreaElement(areaID);
+    List<Element> events = associatedArea.getChildren("event");
+
+    for (Element event : events) {
+      if (event.getAttributeValue("id").equals(Integer.toString(eventID))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   *
+   * @param areaID
+   * @param eventID
+   * @return
+   * @throws IllegalArgumentException
+   */
+  private Element getEventElement(int areaID, int eventID) {
+    Element associatedArea = getAreaElement(areaID);
+    List<Element> events = associatedArea.getChildren("event");
+
+    for (Element event : events) {
+      if (event.getAttributeValue("id").equals(Integer.toString(eventID))) {
+        return event;
+      }
+    }
+    throw new IllegalArgumentException("Given area id doesn't have an event with the given event" +
+            "id!");
+  }
+
+  /**
+   * Checks if a given AreaData is valid, i.e. it is non-null, its name is not empty, and its id
+   * is a natural number.
    * @param data AreaData to check
    * @throws IllegalArgumentException if the given Area data is null or has an empty name
    */
@@ -108,11 +147,15 @@ public class ModelImpl implements ModelInterface {
     else if (data.getAreaName().isEmpty()){
       throw new IllegalArgumentException("Given data must have a non-empty name!");
     }
+    else if (data.getAreaId() < 0) {
+      throw new IllegalArgumentException("Given data must have a natural number as an id!");
+    }
   }
 
   /**
-   * Checks if a given EventData is valid - i.e. it is non-null, its name is not empty, and its
-   * associated Area has been added to this model data - else throws an IllegalArgumentException.
+   * Checks if a given EventData is valid - i.e. it is non-null, its name is not empty, its id is a
+   * natural number, and its associated Area has been added to this model data - else throws an
+   * IllegalArgumentException.
    * @param data EventData to check is valid
    * @throws IllegalArgumentException if given EventData is non-null, its name is not empty, and
    * its associated Area has been added to this model data
@@ -123,6 +166,9 @@ public class ModelImpl implements ModelInterface {
     }
     else if (data.getEventName().isEmpty()){
       throw new IllegalArgumentException("Given data must have a non-empty name!");
+    }
+    else if (data.getEventId() < 0) {
+      throw new IllegalArgumentException("Given data must have a natural number as an id!");
     }
     else if (!containsAreaElement(data.getAssociatedAreaId())) {
       throw new IllegalArgumentException("The area this event is associated with has not been" +
@@ -161,7 +207,7 @@ public class ModelImpl implements ModelInterface {
   public void addArea(AreaData data) throws IllegalArgumentException {
     validAreaData(data);
 
-    if (data.getAreaId() >= 0) {
+    if (data.getAreaId() > 0) {
       throw new IllegalArgumentException("Given data's id must be negative to signal it is a new area!");
     }
 
@@ -199,7 +245,7 @@ public class ModelImpl implements ModelInterface {
   public void editArea(AreaData data) throws IllegalArgumentException {
     validAreaData(data);
 
-    if (data.getAreaId() < 0) {
+    if (data.getAreaId() == 0) {
       throw new IllegalArgumentException("Can't edit a new area!");
     }
 
@@ -219,6 +265,63 @@ public class ModelImpl implements ModelInterface {
     areaToEditDesp.setText(editAreaDesp);
   }
 
+  /**
+   * Helper method for converting a date and time array from an EventData into a properly
+   * formatted String to be stored in the XML file.
+   * @param dateAndTimeArray integer array containing info for some date and time of an event
+   * @return String representation of the given date and time info
+   * @throws IllegalArgumentException if date and time array is null or not of length 6, or if
+   *         any of the info stored inside the array doesn't fall within the appropriate range:
+   *         -year - natural number
+   *         -month - [1, 12]
+   *         -day - [0, 31]
+   *         -hour - [0, 12]
+   *         -minute - [0, 59]
+   *         -time convention - 0 or 1
+   */
+  private String dateAndTimeArrayToString(int[] dateAndTimeArray) {
+    if (dateAndTimeArray == null) {
+      throw new IllegalArgumentException("Given date and time array can't be null!");
+    }
+    else if (dateAndTimeArray.length != 6) {
+      throw new IllegalArgumentException("Given date and time array must be of length 6 " +
+              "- must have a year, month, day, hour, minute, and AM / PM time convention!");
+    }
+
+    int year = dateAndTimeArray[0];
+    int month = dateAndTimeArray[1];
+    int day = dateAndTimeArray[2];
+    int hour = dateAndTimeArray[3];
+    int minute = dateAndTimeArray[4];
+    int convention = dateAndTimeArray[5];
+
+    if (year < 0) {
+      throw new IllegalArgumentException("Can't have a negative year!");
+    }
+    else if (!(1 <= month && month <= 12)) {
+      throw new IllegalArgumentException("A month must be in range [1, 12]!");
+    }
+    else if (!(1 <= day && day <= 31)) {
+      throw new IllegalArgumentException("A day must be in the range [1, 31]!");
+    }
+    else if (!(0 <= hour && hour <= 12)) {
+      throw new IllegalArgumentException("A hour must be in the range [0, 12]");
+    }
+    else if (!(0 <= minute && minute <= 59)) {
+      throw new IllegalArgumentException("A minute must be in the range [0, 59]");
+    }
+    else if (convention != 0 && convention != 1) {
+      throw new IllegalArgumentException("A time convention must either be a 0 for AM or " +
+              "a 1 for PM!");
+    }
+
+    if (convention == 1) {
+      hour += 12;
+    }
+
+    return String.format("%02d-%02d-%02dT%02d:%02d:00", year, month, day, hour, minute);
+  }
+
   @Override
   public void addEvent(EventData data) throws IllegalArgumentException {
     validEventData(data);
@@ -231,7 +334,7 @@ public class ModelImpl implements ModelInterface {
     String eventLocation = data.getEventLocation();
     int[] eventDateAndTime = data.getEventDateAndTime();
 
-    if (eventID >= 0) {
+    if (eventID > 0) {
       throw new IllegalArgumentException("Given event data doesn't represent a new event!");
     }
 
@@ -240,32 +343,17 @@ public class ModelImpl implements ModelInterface {
     Element newEvent = new Element("event");
     newEvent.setAttribute("id", Integer.toString(associatedArea.getChildren("event").size()) + 1);
 
-    Element eventNameElement = new Element("name");
-    eventNameElement.setText(eventName);
+    Element eventNameElement = new Element("name").setText(eventName);
     newEvent.addContent(eventNameElement);
 
-    Element eventDespElement = new Element("description");
-    eventDespElement.setText(eventDesp);
+    Element eventDespElement = new Element("description").setText(eventDesp);
     newEvent.addContent(eventDespElement);
 
-    Element eventDateAndTimeElement = new Element("date-time");
-    int year = eventDateAndTime[0];
-    int month = eventDateAndTime[1];
-    int day = eventDateAndTime[2];
-    int hour = eventDateAndTime[3];
-    int minute = eventDateAndTime[4];
-    int convention = eventDateAndTime[5];
-
-    if (convention == 1) {
-      hour += 12;
-    }
-
-    String result = String.format("%02d-%02d-%02dT%02d:%02d:00", year, month, day, hour, minute);
-    eventDateAndTimeElement.addContent(result);
+    String result = dateAndTimeArrayToString(eventDateAndTime);
+    Element eventDateAndTimeElement = new Element("date-time").addContent(result);
     newEvent.addContent(eventDateAndTimeElement);
 
-    Element eventLocationElement = new Element("location");
-    eventDespElement.setText(eventLocation);
+    Element eventLocationElement = new Element("location").setText(eventLocation);
     newEvent.addContent(eventLocationElement);
 
     associatedArea.addContent(newEvent);
@@ -273,7 +361,30 @@ public class ModelImpl implements ModelInterface {
 
   @Override
   public void editEvent(EventData data) throws IllegalArgumentException {
+    validEventData(data);
 
+    int areaID = data.getAssociatedAreaId();
+    int eventID = data.getEventId();
+    String editEventName = data.getEventName();
+    String editEventDesp = data.getEventDescription();
+    String editEventLocation = data.getEventLocation();
+    int[] editEventDateAndTime = data.getEventDateAndTime();
+
+    if (eventID == 0) {
+      throw new IllegalArgumentException("Given event data represents a new event that isn't" +
+              "already apart of this data model!");
+    }
+
+    Element eventToEdit = getEventElement(areaID, eventID);
+
+    eventToEdit.getChild("name").setText(editEventName);
+
+    eventToEdit.getChild("description").setText(editEventDesp);
+
+    String result = dateAndTimeArrayToString(editEventDateAndTime);
+    eventToEdit.getChild("date-time").setText(result);
+
+    eventToEdit.getChild("location").setText(editEventLocation);
   }
 
   @Override
