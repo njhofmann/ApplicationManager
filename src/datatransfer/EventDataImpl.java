@@ -47,7 +47,7 @@ public class EventDataImpl implements EventData {
    * @param location where this event is to occur
    * @param dateAndTime the date and time this even is to occur
    * @throws IllegalArgumentException if given areaID is non-positive, if given eventID is negative,
-   *                                  if any given parameter is null, if given name is empty, or if
+   *                                  if any given parameter is null, or if
    *                                  given dateAndTime is not of length 6 (year, month, day, hour,
    *                                  minute, and AM / PM), or if given dateAndTime do not have a
    *                                  proper time convention (AM or PM).
@@ -64,9 +64,6 @@ public class EventDataImpl implements EventData {
     else if (name == null || desp == null || location == null || dateAndTime == null) {
       throw new IllegalArgumentException("Given name, description, location, and / or " +
               "date and time can't be null!");
-    }
-    else if (name.isEmpty()) {
-      throw new IllegalArgumentException("Given Event name can't be empty!");
     }
     else if (dateAndTime.length != 6) {
       throw new IllegalArgumentException("Given date and time array must contain 5 items - " +

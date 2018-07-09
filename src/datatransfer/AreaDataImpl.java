@@ -28,8 +28,8 @@ public class AreaDataImpl implements AreaData {
    * @param id ID of represented Area
    * @param name name of represented Area
    * @param desp description of represented Area
-   * @throws IllegalArgumentException if given ID is not a natural number, if given name is null
-   *         or empty, or if given description is null.
+   * @throws IllegalArgumentException if given ID is not a natural number, if given name is null, or
+   *         if given description is null.
    */
   public AreaDataImpl(int id, String name, String desp) {
     if (id < 0) {
@@ -37,9 +37,6 @@ public class AreaDataImpl implements AreaData {
     }
     else if (name == null) {
       throw new IllegalArgumentException("Given name can't be null!");
-    }
-    else if (name.isEmpty()) {
-      throw new IllegalArgumentException("Given name can't be empty!");
     }
     else if (desp == null) {
       throw new IllegalArgumentException("Given description can't be null!");

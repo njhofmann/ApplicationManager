@@ -64,6 +64,26 @@ public interface ModelInterface {
   void editEvent(EventData data) throws IllegalArgumentException;
 
   /**
+   * Removes the Area with the associated ID from the given AreaData from this model. Ignores the
+   * name and description parts of the AreaData.
+   * @param data
+   * @throws IllegalArgumentException if given AreaData is null, or if no Area with the given ID
+   *         has been added to the model
+   */
+  void deleteArea(AreaData data);
+
+  /**
+   * Removes the Event with the associated Event ID from the Area with the matching Area ID, both
+   * IDs are given by the input EventData. Ignores the name, description, location, and date & time
+   * parts of the EventData.
+   * @param data
+   * @throws IllegalArgumentException if given EventData is null, if no Area with the given Area ID
+   *         has been added to the model, or if no Event with the given Event ID has been added to
+   *         the Area with the given Area ID
+   */
+  void deleteEvent(EventData data);
+
+  /**
    * Outputs the data of this ApplicationManager's data model as a String for other storage,
    * testing, etc.
    * @return data of AM's data model as a String.

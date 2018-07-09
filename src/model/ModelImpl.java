@@ -99,24 +99,6 @@ public class ModelImpl implements ModelInterface {
     throw new IllegalArgumentException("No area with the given id has been added to this model data!");
   }
 
-  /**
-   * Returns if true there is an Event whose ID is the given event ID, whose associated Area has
-   * an ID matching given Area ID, in this model data.
-   * @param areaID id of the desired event's associated area
-   * @param eventID id of the associated event
-   * @return if such an event has been added to this model data
-   */
-  private boolean containsEventElement(int areaID, int eventID) {
-    Element associatedArea = getAreaElement(areaID);
-    List<Element> events = associatedArea.getChildren("event");
-
-    for (Element event : events) {
-      if (event.getAttributeValue("id").equals(Integer.toString(eventID))) {
-        return true;
-      }
-    }
-    return false;
-  }
 
   /**
    * Returns the Event whose ID is the given event ID, whose associated Area has an ID matching
@@ -138,8 +120,8 @@ public class ModelImpl implements ModelInterface {
         return event;
       }
     }
-    throw new IllegalArgumentException("Given area id doesn't have an event with the given event" +
-            "id!");
+    throw new IllegalArgumentException("Area associated with given Area ID doesn't have an " +
+            "Event with the given Event ID!");
   }
 
   /**
@@ -150,13 +132,10 @@ public class ModelImpl implements ModelInterface {
    */
   private void validAreaData(AreaData data) {
     if (data == null) {
-      throw new IllegalArgumentException("Given data can't be null");
-    }
-    else if (data.getAreaName().isEmpty()){
-      throw new IllegalArgumentException("Given data must have a non-empty name!");
+      throw new IllegalArgumentException("Given Area data can't be null");
     }
     else if (data.getAreaId() < 0) {
-      throw new IllegalArgumentException("Given data must have a natural number as an id!");
+      throw new IllegalArgumentException("Given Area data must have a natural number as an ID!");
     }
   }
 
@@ -172,11 +151,8 @@ public class ModelImpl implements ModelInterface {
     if (data == null) {
       throw new IllegalArgumentException("Given data can't be null");
     }
-    else if (data.getEventName().isEmpty()){
-      throw new IllegalArgumentException("Given data must have a non-empty name!");
-    }
     else if (data.getEventId() < 0) {
-      throw new IllegalArgumentException("Given data must have a natural number as an id!");
+      throw new IllegalArgumentException("Given Event data must have a natural number as an ID!");
     }
     else if (!containsAreaElement(data.getAssociatedAreaId())) {
       throw new IllegalArgumentException("The area this event is associated with has not been" +
@@ -215,8 +191,9 @@ public class ModelImpl implements ModelInterface {
   public void addArea(AreaData data) throws IllegalArgumentException {
     validAreaData(data);
 
-    if (data.getAreaId() > 0) {
-      throw new IllegalArgumentException("Given data's id must be negative to signal it is a new area!");
+    if (data.getAreaId() != 0) {
+      throw new IllegalArgumentException("Given AreaData's ID must be zero to signal it " +
+              "represents an Area not yet added to this model!");
     }
 
     // Get the root child of the XML file and all its inner children.
@@ -388,6 +365,60 @@ public class ModelImpl implements ModelInterface {
     eventToEdit.getChild("date-time").setText(result);
 
     eventToEdit.getChild("location").setText(editEventLocation);
+  }
+
+  @Override
+  public void deleteArea(AreaData data) {
+    validAreaData(data);
+
+    int areaID = data.getAreaId();
+
+    if (areaID == 0) {
+      throw new IllegalArgumentException("No Area that is apart of this model can have the ID" +
+              "dedicated to new Areas - i.e. no Area can have ID of zero!");
+    }
+
+    Element areaToRemove = getAreaElement(areaID);
+    modelData.getRootElement().removeContent(areaToRemove);
+
+    List<Element> remainingAreas = modelData.getRootElement().getChildren();
+    for (Element area : remainingAreas) {
+      int curAreaID = Integer.parseInt(area.getAttributeValue("id"));
+      if (curAreaID > areaID) {
+        String newCurAreaID = Integer.toString(curAreaID - 1);
+        area.setAttribute("id", newCurAreaID);
+      }
+    }
+  }
+
+  @Override
+  public void deleteEvent(EventData data) {
+    validEventData(data);
+
+    int areaID = data.getAssociatedAreaId();
+    int eventID = data.getEventId();
+
+    if (areaID == 0) {
+      throw new IllegalArgumentException("No Area that is apart of this model can have the ID" +
+              "dedicated to new Areas - i.e. no Area can have ID of zero!");
+    }
+    else if (eventID == 0) {
+      throw new IllegalArgumentException("No Event that is apart of this model can have the ID" +
+              "dedicated to new Events - i.e. no Event can have ID of zero!");
+    }
+
+    Element associatedArea = getAreaElement(areaID);
+    Element eventToDelete = getEventElement(areaID, eventID);
+    associatedArea.removeContent(eventToDelete);
+
+    List<Element> remainingEvents = associatedArea.getChildren("event");
+    for (Element event : remainingEvents) {
+      int curEventID = Integer.parseInt(event.getAttributeValue("id"));
+      if (curEventID > eventID) {
+        String newCurEventID = Integer.toString(curEventID - 1);
+        event.setAttribute("id", newCurEventID);
+      }
+    }
   }
 
   @Override
