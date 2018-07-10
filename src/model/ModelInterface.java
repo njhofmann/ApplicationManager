@@ -1,5 +1,7 @@
 package model;
 
+import java.util.List;
+
 import datatransfer.AreaData;
 import datatransfer.EventData;
 
@@ -82,6 +84,23 @@ public interface ModelInterface {
    *         the Area with the given Area ID
    */
   void deleteEvent(EventData data);
+
+  /**
+   * Outputs a list of AreaDatas representing all Areas stored in this Model.
+   * @return list of AreaDatas representing all Areas stored in this Model
+   */
+  List<AreaData> outputAreas();
+
+  /**
+   * Outputs a list of EventDatas representing all the Events of a specific added Area, specified
+   * Area is given by the ID of the given AreaData. The name and description of the given AreaData
+   * are ignored.
+   * @param data AreaData whose ID specifies which corresponding Area's Events to return
+   * @return list of EventDatas representing all the events of a specific Area, as given by the ID
+   *         of the given AreaData
+   * @throws IllegalArgumentException if given AreaData is null
+   */
+  List<EventData> outputEvents(AreaData data);
 
   /**
    * Outputs the data of this ApplicationManager's data model as a String for other storage,

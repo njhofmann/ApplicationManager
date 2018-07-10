@@ -12,10 +12,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import datatransfer.AreaData;
+import datatransfer.AreaDataImpl;
 import datatransfer.EventData;
+import datatransfer.EventDataImpl;
 
 /**
  * An implementation of the ModelInterface for a ApplicationManager. This implementation is
@@ -418,6 +421,62 @@ public class ModelImpl implements ModelInterface {
         event.setAttribute("id", newCurEventID);
       }
     }
+  }
+
+  @Override
+  public List<AreaData> outputAreas() {
+    List<AreaData> toReturn = new ArrayList<>();
+
+    List<Element> areas = modelData.getRootElement().getChildren();
+
+    for (Element area : areas) {
+      int id = Integer.parseInt(area.getAttributeValue("id"));
+      String name = area.getChild("name").getText();
+      String desp = area.getChild("description").getText();
+      AreaData toAdd = new AreaDataImpl(id, name, desp);
+      toReturn.add(toAdd);
+    }
+
+    return toReturn;
+  }
+
+  @Override
+  public List<EventData> outputEvents(AreaData data) {
+    int areaID = data.getAreaId();
+    Element area = getAreaElement(areaID);
+
+    List<EventData> toReturn = new ArrayList<>();
+
+    List<Element> events = area.getChildren("event");
+    for (Element event : events) {
+      int id = Integer.parseInt(event.getAttributeValue("id"));
+      String name = event.getChild("name").getText();
+      String desp = event.getChild("description").getText();
+      String location = event.getChild("location").getText();
+
+      String dateAndTimeString = event.getChild("date-time").getText();
+      int year = Integer.parseInt(dateAndTimeString.substring(0, 4));
+      int month = Integer.parseInt(dateAndTimeString.substring(5, 7));
+      int day = Integer.parseInt(dateAndTimeString.substring(9, 11));
+      int hour = Integer.parseInt(dateAndTimeString.substring(12, 14));
+      int minute = Integer.parseInt(dateAndTimeString.substring(15, 17));
+      int convention;
+
+      if (hour > 12) {
+        hour -= 12;
+        convention = 1;
+      }
+      else {
+        convention = 0;
+      }
+
+      int[] dateAndTime = new int[]{year, month, day, hour, minute, convention};
+
+      EventData toAdd = new EventDataImpl(areaID, id, name, desp, location, dateAndTime);
+      toReturn.add(toAdd);
+    }
+
+    return toReturn;
   }
 
   @Override

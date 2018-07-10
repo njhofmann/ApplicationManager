@@ -27,6 +27,6 @@ public class ControllerImpl implements ControllerInterface {
 
   @Override
   public void run() {
-
+    view.start();
   }
 }
