@@ -7,4 +7,8 @@ package controller;
  */
 public interface ControllerInterface {
 
+  /**
+   * Starts up the Controller, in essence starting up the program.
+   */
+  void run();
 }

@@ -99,7 +99,6 @@ public class ModelImpl implements ModelInterface {
     throw new IllegalArgumentException("No area with the given id has been added to this model data!");
   }
 
-
   /**
    * Returns the Event whose ID is the given event ID, whose associated Area has an ID matching
    * given Area ID.
