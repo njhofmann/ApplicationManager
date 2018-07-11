@@ -23,10 +23,13 @@ public class ControllerImpl implements ControllerInterface {
     }
     this.model = model;
     this.view = view;
+    this.model.openModelData();
   }
 
   @Override
   public void run() {
+    view.receiveAreas(model.outputAreas());
     view.start();
+
   }
 }
