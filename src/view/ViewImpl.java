@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import datatransfer.AreaData;
+import datatransfer.AreaDataImpl;
 import datatransfer.EventData;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -18,6 +19,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.ModelInterface;
 
@@ -66,8 +68,6 @@ public class ViewImpl extends Application implements ViewInterface {
   public void init() throws Exception {
     areasDisplay = new ScrollPane();
     eventsDisplay = new ScrollPane();
-    model.openModelData();
-    this.areas = model.outputAreas();
   }
 
   @Override
@@ -101,9 +101,19 @@ public class ViewImpl extends Application implements ViewInterface {
     addNewArea.setMinWidth(newAreaButtonWidth);
     addNewArea.setMinHeight(newAreaButtonHeight);
 
+    addNewArea.setOnAction(event -> {
+      Stage addAreaWindow = new Stage();
+      addAreaWindow.initModality(Modality.APPLICATION_MODAL);
+      addAreaWindow.show();
+
+      AreaData toSend = new AreaDataImpl(0, "banana", "");
+      model.addArea(toSend);
+      receiveAreas(model.outputAreas());
+    });
+
     areasDisplay.setMinWidth(areasDisplayWidth);
     areasDisplay.setMinHeight(areasDisplayHeight);
-    receiveAreas(areas);
+    receiveAreas(model.outputAreas());
 
     VBox internalVBox = new VBox();
     internalVBox.setSpacing(0);
@@ -117,6 +127,11 @@ public class ViewImpl extends Application implements ViewInterface {
     // Event part of the root
     VBox eventVBox = new VBox();
     Button addNewEvent = new Button("Add New Event");
+    addNewEvent.setOnAction(event -> {
+      if (displayID > 0) {
+
+      }
+    });
     addNewEvent.setMinWidth(addNewEventWidth);
     addNewEvent.setMinHeight(addNewEventHeight);
 
@@ -171,7 +186,6 @@ public class ViewImpl extends Application implements ViewInterface {
       internalVBox.setMinWidth(300);
 
       for (AreaData area : this.areas) {
-
         Text areaName = new Text(area.getAreaName());
         Rectangle rectangle = new Rectangle(300, 100, Color.GHOSTWHITE);
         StackPane toAdd = new StackPane();
@@ -180,7 +194,6 @@ public class ViewImpl extends Application implements ViewInterface {
         toAdd.setMinHeight(100);
 
         internalVBox.getChildren().add(toAdd);
-        System.out.print(area.getAreaName());
       }
       areasDisplay.setContent(internalVBox);
     }

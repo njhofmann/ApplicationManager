@@ -14,8 +14,15 @@ import model.ModelInterface;
  */
 public interface ViewInterface {
 
+  /**
+   * Sets the Model this View is associated with, Model gives the data for the View to display.
+   * @param model
+   */
   void setAssociatedModel(ModelInterface model);
 
+  /**
+   * Starts displaying this View's contents.
+   */
   void start();
 
   /**

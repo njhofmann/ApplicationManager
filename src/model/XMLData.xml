@@ -1,11 +1,3 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="XMLDataSchema.xml">
-  <area id="1">
-    <name>nate</name>
-    <description />
-  </area>
-  <area id="2">
-    <name>banana</name>
-    <description />
-  </area>
 </root>
