@@ -5,6 +5,7 @@ import java.util.List;
 
 import datatransfer.AreaData;
 import datatransfer.EventData;
+import model.ModelInterface;
 
 /**
  * Displays the data of this ApplicationManager so that a user may visually see it, as well as
@@ -13,21 +14,9 @@ import datatransfer.EventData;
  */
 public interface ViewInterface {
 
-  /**
-   * Starts displaying this View.
-   */
+  void setAssociatedModel(ModelInterface model);
+
   void start();
-
-  /**
-   * Ends this View.
-   */
-  void end();
-
-  /**
-   * After new data has been received by this View, updates what the View is displaying to 
-   * correspond more closely with the data that has been received.
-   */
-  void update();
 
   /**
    * Adds an ActionListener to this View for the purposes of supporting user interaction and

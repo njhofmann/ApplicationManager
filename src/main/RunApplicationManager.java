@@ -2,8 +2,6 @@ package main;
 
 import java.io.File;
 
-import controller.ControllerImpl;
-import controller.ControllerInterface;
 import model.ModelImpl;
 import model.ModelInterface;
 import view.ViewImpl;
@@ -22,7 +20,7 @@ public class RunApplicationManager {
     String filePath = new File(".").getAbsolutePath() + "/src/model/XMLData.xml";
     ModelInterface model = new ModelImpl(filePath);
     ViewInterface view = new ViewImpl();
-    ControllerInterface controller = new ControllerImpl(model, view);
-    controller.run();
+    view.setAssociatedModel(model);
+    view.start();
   }
 }

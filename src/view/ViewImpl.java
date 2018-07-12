@@ -19,6 +19,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import model.ModelInterface;
 
 /**
  *
@@ -26,11 +27,16 @@ import javafx.stage.Stage;
 public class ViewImpl extends Application implements ViewInterface {
 
   /**
+   * The model this View is associated with.
+   */
+  private static ModelInterface model;
+
+  /**
    * The AreaDatas whose data s currently being displayed. Static variable since when launching an
    * application, a new instance of that application is created, must be static so <i>any</i>
    * ViewImpl instance can access the areas that need to be displayed.
    */
-  private static List<AreaData> areas = new ArrayList<>();
+  private List<AreaData> areas = new ArrayList<>();
 
   /**
    * The ID of the Area whose events are currently being displayed.
@@ -60,6 +66,8 @@ public class ViewImpl extends Application implements ViewInterface {
   public void init() throws Exception {
     areasDisplay = new ScrollPane();
     eventsDisplay = new ScrollPane();
+    model.openModelData();
+    this.areas = model.outputAreas();
   }
 
   @Override
@@ -135,18 +143,13 @@ public class ViewImpl extends Application implements ViewInterface {
   }
 
   @Override
+  public void setAssociatedModel(ModelInterface model) {
+    ViewImpl.model = model;
+  }
+
+  @Override
   public void start() {
     launch();
-  }
-
-  @Override
-  public void end() {
-
-  }
-
-  @Override
-  public void update() {
-
   }
 
   @Override
