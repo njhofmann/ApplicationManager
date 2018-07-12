@@ -13,9 +13,10 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -25,9 +26,11 @@ import javafx.stage.Stage;
 public class ViewImpl extends Application implements ViewInterface {
 
   /**
-   * The AreaDatas whose data s currently being displayed.
+   * The AreaDatas whose data s currently being displayed. Static variable since when launching an
+   * application, a new instance of that application is created, must be static so <i>any</i>
+   * ViewImpl instance can access the areas that need to be displayed.
    */
-  private List<AreaData> areas = new ArrayList<>();
+  private static List<AreaData> areas = new ArrayList<>();
 
   /**
    * The ID of the Area whose events are currently being displayed.
@@ -50,7 +53,8 @@ public class ViewImpl extends Application implements ViewInterface {
    */
   private ScrollPane eventsDisplay;
 
-  public ViewImpl() { }
+  public ViewImpl() {
+  }
 
   @Override
   public void init() throws Exception {
@@ -91,6 +95,11 @@ public class ViewImpl extends Application implements ViewInterface {
 
     areasDisplay.setMinWidth(areasDisplayWidth);
     areasDisplay.setMinHeight(areasDisplayHeight);
+    receiveAreas(areas);
+
+    VBox internalVBox = new VBox();
+    internalVBox.setSpacing(0);
+    internalVBox.setMinWidth(300);
 
     areaVBox.setSpacing(0);
     areaVBox.getChildren().addAll(addNewArea, areasDisplay);
@@ -152,20 +161,26 @@ public class ViewImpl extends Application implements ViewInterface {
     }
 
     this.areas = areas;
-    VBox internalVBox = new VBox();
 
-    for (AreaData area : areas) {
-      Pane toAdd = new Pane();
+    if (areasDisplay != null) {
+      VBox internalVBox = new VBox();
+      internalVBox.setSpacing(10);
+      internalVBox.setMinWidth(300);
 
-      Rectangle background = new Rectangle(0, 0, 300, 200);
-      background.setFill(Color.BLUE);
+      for (AreaData area : this.areas) {
 
-      Text name = new Text();
-      name.setText(area.getAreaName());
-      toAdd.getChildren().addAll(background, name);
-      internalVBox.getChildren().add(toAdd);
+        Text areaName = new Text(area.getAreaName());
+        Rectangle rectangle = new Rectangle(300, 100, Color.GHOSTWHITE);
+        StackPane toAdd = new StackPane();
+        toAdd.getChildren().addAll(rectangle, areaName);
+        toAdd.setMinWidth(300);
+        toAdd.setMinHeight(100);
+
+        internalVBox.getChildren().add(toAdd);
+        System.out.print(area.getAreaName());
+      }
+      areasDisplay.setContent(internalVBox);
     }
-    areasDisplay.setContent(internalVBox);
   }
 
   @Override

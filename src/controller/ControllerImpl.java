@@ -30,6 +30,5 @@ public class ControllerImpl implements ControllerInterface {
   public void run() {
     view.receiveAreas(model.outputAreas());
     view.start();
-
   }
 }

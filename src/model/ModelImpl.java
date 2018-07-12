@@ -56,8 +56,6 @@ public class ModelImpl implements ModelInterface {
     }
 
     this.modelDataFilePath = modelDataFilePath;
-    openModelData();
-    closeModelData();
   }
 
   /**
