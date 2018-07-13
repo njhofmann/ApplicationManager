@@ -40,20 +40,4 @@ public interface ViewInterface {
    *         aren't from the same Area (i.e. all don't have the same AreaID)
    */
   void receiveEvents(List<EventData> events);
-
-  /**
-   * Outputs an AreaData to send to a corresponding model for the purposes of creating a new Area,
-   * editing a preexisting Area, or deleting a preexisting Area inside this ApplicationManager's
-   * data model.
-   * @return AreaData containing information about making some change to this AM's data model
-   */
-  AreaData outputAreaData();
-
-  /**
-   * Outputs an EventData to send to a corresponding model for the purposes of creating a new Event,
-   * editing a preexisting Event, or deleting a preexisting Event inside this ApplicationManager's
-   * data model.
-   * @return EventData containing information about making some change to this AM's data model
-   */
-  EventData outputEventData();
 }

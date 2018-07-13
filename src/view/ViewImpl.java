@@ -250,19 +250,35 @@ public class ViewImpl extends Application implements ViewInterface {
           throw new IllegalArgumentException("Can't display Events not associated with the currently selected Area!");
         }
 
-        int backgroundWidth = (int)(eventWidth);
+        int backgroundWidth = eventWidth;
         int backgroundHeight = 50;
-        System.out.print(backgroundWidth);
-        Rectangle background = new Rectangle(backgroundWidth, backgroundHeight, Color.AZURE);
+        Rectangle background = new Rectangle(backgroundWidth, backgroundHeight, Color.GOLD);
 
         Text name = new Text("Event Name: " + event.getEventName());
         Text desp = new Text("Event Desp: " + event.getEventDescription());
         Text location = new Text("Event Location: " + event.getEventLocation());
 
-        Text dateAndTime = new Text();
+        int[] dateAndTimeInfo = event.getEventDateAndTime();
+        int year = dateAndTimeInfo[0];
+        int month = dateAndTimeInfo[1];
+        int day = dateAndTimeInfo[2];
+        int hour = dateAndTimeInfo[3];
+        int minute = dateAndTimeInfo[4];
+        int timeConvention = dateAndTimeInfo[5];
+
+        String timeConventionString;
+        if (timeConvention == 0) {
+          timeConventionString = "AM";
+        }
+        else {
+          timeConventionString = "PM";
+        }
+
+        Text date = new Text(String.format("Date: %d/%d/%d", day, month, year));
+        Text time = new Text(String.format("Time: %d:%02d %s", hour, minute, timeConventionString));
 
         HBox text = new HBox();
-        text.getChildren().addAll(name, desp, location);
+        text.getChildren().addAll(name, desp, location, date, time);
 
         StackPane stack = new StackPane();
         stack.getChildren().addAll(background, text);
@@ -272,15 +288,4 @@ public class ViewImpl extends Application implements ViewInterface {
       eventsDisplay.setContent(internalVBox);
     }
   }
-
-  @Override
-  public AreaData outputAreaData() {
-    return null;
-  }
-
-  @Override
-  public EventData outputEventData() {
-    return null;
-  }
-
 }
