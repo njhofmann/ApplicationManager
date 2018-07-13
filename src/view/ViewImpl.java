@@ -17,7 +17,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -60,6 +59,8 @@ public class ViewImpl extends Application implements ViewInterface {
    */
   private ScrollPane areasDisplay;
 
+  private ScrollPane currentAreaInfo;
+
   /**
    * ScrollPane displaying the data in each EventData in events.
    */
@@ -73,13 +74,11 @@ public class ViewImpl extends Application implements ViewInterface {
 
   private final int eventWidth = totalWidth - areaWidth;
 
-  public ViewImpl() {
-  }
-
   @Override
   public void init() throws Exception {
     areasDisplay = new ScrollPane();
     eventsDisplay = new ScrollPane();
+    currentAreaInfo = new ScrollPane();
   }
 
   @Override
@@ -296,7 +295,6 @@ public class ViewImpl extends Application implements ViewInterface {
     buttons.getChildren().addAll(addNewEvent, deleteArea, editArea);
     buttons.setMinHeight(addNewEventHeight);
 
-    Pane currentAreaInfo = new Pane();
     currentAreaInfo.setMinWidth(currentAreaInfoWidth);
     currentAreaInfo.setMinHeight(currentAreaInfoHeight);
 
@@ -350,6 +348,12 @@ public class ViewImpl extends Application implements ViewInterface {
 
         background.setOnAction(event -> {
           displayID = area.getAreaId();
+
+          Text name = new Text("Name: " + area.getAreaName());
+          Text desp = new Text("Description: " + area.getAreaDescription());
+          VBox text = new VBox(name, desp);
+          currentAreaInfo.setContent(text);
+
           AreaData areaID = new AreaDataImpl(displayID, "", "");
           List<EventData> eventsToDisplay = model.outputEvents(areaID);
           receiveEvents(eventsToDisplay);

@@ -1,3 +1,3 @@
 -Add date and time selection to event adding and editing
--Revamp display
+-Revamp display, make all scroll panels scroll-vertical only
 -Add proper documentation and abstraction in view
