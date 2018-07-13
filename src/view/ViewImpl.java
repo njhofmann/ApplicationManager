@@ -8,6 +8,7 @@ import datatransfer.AreaDataImpl;
 import datatransfer.EventData;
 import datatransfer.EventDataImpl;
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -380,10 +381,6 @@ public class ViewImpl extends Application implements ViewInterface {
           throw new IllegalArgumentException("Can't display Events not associated with the currently selected Area!");
         }
 
-        int backgroundWidth = eventWidth;
-        int backgroundHeight = 50;
-        Rectangle background = new Rectangle(backgroundWidth, backgroundHeight, Color.GOLD);
-
         Text name = new Text("Event Name: " + event.getEventName());
         Text desp = new Text("Event Desp: " + event.getEventDescription());
         Text location = new Text("Event Location: " + event.getEventLocation());
@@ -406,9 +403,6 @@ public class ViewImpl extends Application implements ViewInterface {
 
         Text date = new Text(String.format("Date: %d/%d/%d", day, month, year));
         Text time = new Text(String.format("Time: %d:%02d %s", hour, minute, timeConventionString));
-
-        HBox text = new HBox();
-        text.getChildren().addAll(name, desp, location, date, time);
 
         Button editEvent = new Button("Edit");
         editEvent.setOnAction(event1 -> {
@@ -490,8 +484,16 @@ public class ViewImpl extends Application implements ViewInterface {
           window.show();
         });
 
+        HBox buttons = new HBox(editEvent, deleteEvent);
+        VBox items = new VBox(name, desp, location, date, time, buttons);
+
+        int backgroundWidth = eventWidth;
+        int backgroundHeight = 110;
+        Rectangle background = new Rectangle(backgroundWidth, backgroundHeight, Color.GOLD);
+
         StackPane stack = new StackPane();
-        stack.getChildren().addAll(background, text, deleteEvent, editEvent);
+        stack.getChildren().addAll(background, items);
+        stack.setAlignment(Pos.CENTER_LEFT);
 
         internalVBox.getChildren().add(stack);
       }

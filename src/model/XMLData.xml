@@ -1,13 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="XMLDataSchema.xml">
-  <area id="1">
-    <name>banan</name>
-    <description>pudding</description>
-    <event id="1">
-      <name>woof</name>
-      <description>says the dog</description>
-      <date-time>2017-05-23T05:05:00</date-time>
-      <location>my house</location>
-    </event>
-  </area>
-</root>
+<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="XMLDataSchema.xml" />
