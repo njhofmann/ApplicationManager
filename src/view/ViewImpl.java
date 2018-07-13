@@ -156,7 +156,10 @@ public class ViewImpl extends Application implements ViewInterface {
 
     // Event part of the root
     VBox eventVBox = new VBox();
+
     Button addNewEvent = new Button("Add New Event");
+    addNewEvent.setMinWidth(addNewEventWidth);
+
     addNewEvent.setOnAction(event -> {
       if (displayID > 0) {
         GridPane windowRoot = new GridPane();
@@ -205,15 +208,54 @@ public class ViewImpl extends Application implements ViewInterface {
         addEventWindow.show();
       }
     });
-    addNewEvent.setMinWidth(addNewEventWidth);
-    addNewEvent.setMinHeight(addNewEventHeight);
+
+    Button editAreaButton = new Button("Edit Area");
+    editAreaButton.setMinWidth(addNewEventWidth);
+
+    Button deleteAreaButton = new Button("Delete Area");
+    deleteAreaButton.setMinWidth(addNewEventWidth);
+
+    deleteAreaButton.setOnAction(event -> {
+      if (displayID > 0) {
+        Label check = new Label("Are you sure you want to delete the current Area?");
+        Button delete = new Button("Delete");
+        Button cancel = new Button("Cancel");
+
+        HBox buttons = new HBox(delete, cancel);
+        VBox windowRoot = new VBox(check, buttons);
+
+        Scene windowScene = new Scene(windowRoot);
+        Stage window = new Stage();
+        window.setScene(windowScene);
+
+        delete.setOnAction(event1 -> {
+          AreaData toSend = new AreaDataImpl(displayID, "", "");
+          displayID = 0;
+          model.deleteArea(toSend);
+          receiveAreas(model.outputAreas());
+          window.close();
+        });
+
+        cancel.setOnAction(event1 -> {
+          window.close();
+        });
+
+        window.setTitle("Delete Area");
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.show();
+      }
+    });
+
+    VBox buttons = new VBox();
+    buttons.getChildren().addAll(addNewEvent, deleteAreaButton, editAreaButton);
+    buttons.setMinHeight(addNewEventHeight);
 
     Pane currentAreaInfo = new Pane();
     currentAreaInfo.setMinWidth(currentAreaInfoWidth);
     currentAreaInfo.setMinHeight(currentAreaInfoHeight);
 
     HBox eventHeader = new HBox();
-    eventHeader.getChildren().addAll(currentAreaInfo, addNewEvent);
+    eventHeader.getChildren().addAll(currentAreaInfo, buttons);
 
     eventsDisplay.setMinWidth(eventsDisplayWidth);
     eventsDisplay.setMinHeight(eventsDisplayHeight);
