@@ -1,6 +1,5 @@
 package view;
 
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,8 +9,11 @@ import datatransfer.EventData;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -61,6 +63,14 @@ public class ViewImpl extends Application implements ViewInterface {
    */
   private ScrollPane eventsDisplay;
 
+  private final int totalWidth = 700;
+
+  private final int totalHeight = 500;
+
+  private final int areaWidth = 200;
+
+  private final int eventWidth = totalWidth - areaWidth;
+
   public ViewImpl() {
   }
 
@@ -73,13 +83,6 @@ public class ViewImpl extends Application implements ViewInterface {
   @Override
   public void start(Stage primaryStage) throws Exception {
     BorderPane root = new BorderPane();
-    
-    // Width and height values
-    int totalWidth = 800;
-    int totalHeight = 500;
-    
-    int areaWidth = 300;
-    int eventWidth = totalWidth - areaWidth;
 
     int newAreaButtonWidth = areaWidth;
     int newAreaButtonHeight = 40;
@@ -102,24 +105,50 @@ public class ViewImpl extends Application implements ViewInterface {
     addNewArea.setMinHeight(newAreaButtonHeight);
 
     addNewArea.setOnAction(event -> {
-      Stage addAreaWindow = new Stage();
-      addAreaWindow.initModality(Modality.APPLICATION_MODAL);
-      addAreaWindow.show();
+      GridPane newAreaWindowRoot = new GridPane();
 
-      AreaData toSend = new AreaDataImpl(0, "banana", "");
-      model.addArea(toSend);
-      receiveAreas(model.outputAreas());
+      Label nameLabel = new Label("New Area Name:");
+      newAreaWindowRoot.add(nameLabel, 0, 0);
+
+      Label despLabel = new Label("New Area Desp:");
+      newAreaWindowRoot.add(despLabel, 0, 1);
+
+      TextField nameField = new TextField();
+      newAreaWindowRoot.add(nameField, 1, 0);
+
+      TextField despField = new TextField();
+      newAreaWindowRoot.add(despField, 1, 1);
+
+      Button submit = new Button("Submit");
+      newAreaWindowRoot.add(submit, 2, 0);
+
+      Button cancel = new Button("Cancel");
+      newAreaWindowRoot.add(cancel, 2, 1);
+
+      Scene newAreaWindowScene = new Scene(newAreaWindowRoot);
+      Stage addAreaWindow = new Stage();
+      addAreaWindow.setScene(newAreaWindowScene);
+      addAreaWindow.setTitle("Add New Area");
+      addAreaWindow.initModality(Modality.APPLICATION_MODAL);
+
+      submit.setOnAction(event12 -> {
+        addAreaWindow.close();
+        AreaData toSend = new AreaDataImpl(0, nameField.getText(), despField.getText());
+        model.addArea(toSend);
+        receiveAreas(model.outputAreas());
+      });
+
+      cancel.setOnAction(event1 -> {
+        addAreaWindow.close();
+      });
+
+      addAreaWindow.show();
     });
 
     areasDisplay.setMinWidth(areasDisplayWidth);
     areasDisplay.setMinHeight(areasDisplayHeight);
     receiveAreas(model.outputAreas());
 
-    VBox internalVBox = new VBox();
-    internalVBox.setSpacing(0);
-    internalVBox.setMinWidth(300);
-
-    areaVBox.setSpacing(0);
     areaVBox.getChildren().addAll(addNewArea, areasDisplay);
     areaVBox.setMinWidth(areaWidth);
     areaVBox.setMinHeight(totalHeight);
@@ -168,11 +197,6 @@ public class ViewImpl extends Application implements ViewInterface {
   }
 
   @Override
-  public void addActionListener(ActionListener actionListener) {
-
-  }
-
-  @Override
   public void receiveAreas(List<AreaData> areas) {
     if (areas == null) {
       throw new IllegalArgumentException("Given list of AreaDatas can't be null!");
@@ -182,16 +206,26 @@ public class ViewImpl extends Application implements ViewInterface {
 
     if (areasDisplay != null) {
       VBox internalVBox = new VBox();
-      internalVBox.setSpacing(10);
-      internalVBox.setMinWidth(300);
+      internalVBox.setSpacing(5);
 
       for (AreaData area : this.areas) {
         Text areaName = new Text(area.getAreaName());
-        Rectangle rectangle = new Rectangle(300, 100, Color.GHOSTWHITE);
+
+        int backgroundWidth = (int)(areaWidth - areasDisplay.getViewportBounds().getWidth());
+        int backgroundHeight = 50;
+        Button background = new Button();
+        background.setMinHeight(backgroundHeight);
+        background.setMinWidth(backgroundWidth);
+
+        background.setOnAction(event -> {
+          displayID = area.getAreaId();
+          AreaData areaID = new AreaDataImpl(displayID, "", "");
+          List<EventData> eventsToDisplay = model.outputEvents(areaID);
+          receiveEvents(eventsToDisplay);
+        });
+
         StackPane toAdd = new StackPane();
-        toAdd.getChildren().addAll(rectangle, areaName);
-        toAdd.setMinWidth(300);
-        toAdd.setMinHeight(100);
+        toAdd.getChildren().addAll(background, areaName);
 
         internalVBox.getChildren().add(toAdd);
       }
@@ -201,7 +235,42 @@ public class ViewImpl extends Application implements ViewInterface {
 
   @Override
   public void receiveEvents(List<EventData> events) {
+    if (events == null) {
+      throw new IllegalArgumentException("Given list of EventDatas can't be null!");
+    }
 
+    this.events = events;
+
+    if (events != null) {
+      VBox internalVBox = new VBox();
+      internalVBox.setSpacing(5);
+
+      for (EventData event : this.events) {
+        if (event.getAssociatedAreaId() != displayID) {
+          throw new IllegalArgumentException("Can't display Events not associated with the currently selected Area!");
+        }
+
+        int backgroundWidth = (int)(eventWidth);
+        int backgroundHeight = 50;
+        System.out.print(backgroundWidth);
+        Rectangle background = new Rectangle(backgroundWidth, backgroundHeight, Color.AZURE);
+
+        Text name = new Text("Event Name: " + event.getEventName());
+        Text desp = new Text("Event Desp: " + event.getEventDescription());
+        Text location = new Text("Event Location: " + event.getEventLocation());
+
+        Text dateAndTime = new Text();
+
+        HBox text = new HBox();
+        text.getChildren().addAll(name, desp, location);
+
+        StackPane stack = new StackPane();
+        stack.getChildren().addAll(background, text);
+
+        internalVBox.getChildren().add(stack);
+      }
+      eventsDisplay.setContent(internalVBox);
+    }
   }
 
   @Override

@@ -298,7 +298,7 @@ public class ModelImpl implements ModelInterface {
     if (convention == 1) {
       hour += 12;
     }
-
+    System.out.print(String.format("%02d-%02d-%02dT%02d:%02d:00", year, month, day, hour, minute));
     return String.format("%02d-%02d-%02dT%02d:%02d:00", year, month, day, hour, minute);
   }
 
@@ -455,9 +455,9 @@ public class ModelImpl implements ModelInterface {
       String dateAndTimeString = event.getChild("date-time").getText();
       int year = Integer.parseInt(dateAndTimeString.substring(0, 4));
       int month = Integer.parseInt(dateAndTimeString.substring(5, 7));
-      int day = Integer.parseInt(dateAndTimeString.substring(9, 11));
-      int hour = Integer.parseInt(dateAndTimeString.substring(12, 14));
-      int minute = Integer.parseInt(dateAndTimeString.substring(15, 17));
+      int day = Integer.parseInt(dateAndTimeString.substring(8, 10));
+      int hour = Integer.parseInt(dateAndTimeString.substring(11, 13));
+      int minute = Integer.parseInt(dateAndTimeString.substring(14, 16));
       int convention;
 
       if (hour > 12) {

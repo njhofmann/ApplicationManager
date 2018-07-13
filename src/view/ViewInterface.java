@@ -1,6 +1,5 @@
 package view;
 
-import java.awt.event.ActionListener;
 import java.util.List;
 
 import datatransfer.AreaData;
@@ -24,14 +23,6 @@ public interface ViewInterface {
    * Starts displaying this View's contents.
    */
   void start();
-
-  /**
-   * Adds an ActionListener to this View for the purposes of supporting user interaction and
-   * properly interfacing the dynamic changes a user may make to corresponding with the displayed
-   * data in the View to the actual data model within the corresponding Model.
-   * @param actionListener actionListener to add to this View
-   */
-  void addActionListener(ActionListener actionListener);
 
   /**
    * Receives a list of AreaDatas representing all the Areas stored in the corresponding model to
