@@ -209,13 +209,58 @@ public class ViewImpl extends Application implements ViewInterface {
       }
     });
 
-    Button editAreaButton = new Button("Edit Area");
-    editAreaButton.setMinWidth(addNewEventWidth);
+    Button editArea = new Button("Edit Area");
+    editArea.setMinWidth(addNewEventWidth);
 
-    Button deleteAreaButton = new Button("Delete Area");
-    deleteAreaButton.setMinWidth(addNewEventWidth);
+    editArea.setOnAction(event -> {
+      if (displayID > 0) {
+        AreaData toEdit = areas.get(displayID - 1);
 
-    deleteAreaButton.setOnAction(event -> {
+        GridPane newAreaWindowRoot = new GridPane();
+
+        Label nameLabel = new Label("Edit Area Name:");
+        newAreaWindowRoot.add(nameLabel, 0, 0);
+
+        Label despLabel = new Label("Edit Area Description:");
+        newAreaWindowRoot.add(despLabel, 0, 1);
+
+        TextField nameField = new TextField(toEdit.getAreaName());
+        newAreaWindowRoot.add(nameField, 1, 0);
+
+        TextField despField = new TextField(toEdit.getAreaDescription());
+        newAreaWindowRoot.add(despField, 1, 1);
+
+        Button submit = new Button("Submit");
+        newAreaWindowRoot.add(submit, 2, 0);
+
+        Button cancel = new Button("Cancel");
+        newAreaWindowRoot.add(cancel, 2, 1);
+
+        Scene newAreaWindowScene = new Scene(newAreaWindowRoot);
+        Stage addAreaWindow = new Stage();
+        addAreaWindow.setScene(newAreaWindowScene);
+        addAreaWindow.setTitle("Edit Currnet Area");
+        addAreaWindow.initModality(Modality.APPLICATION_MODAL);
+
+        submit.setOnAction(event12 -> {
+          addAreaWindow.close();
+          AreaData toSend = new AreaDataImpl(toEdit.getAreaId(), nameField.getText(), despField.getText());
+          model.editArea(toSend);
+          receiveAreas(model.outputAreas());
+        });
+
+        cancel.setOnAction(event1 -> {
+          addAreaWindow.close();
+        });
+
+        addAreaWindow.show();
+      }
+    });
+
+    Button deleteArea = new Button("Delete Area");
+    deleteArea.setMinWidth(addNewEventWidth);
+
+    deleteArea.setOnAction(event -> {
       if (displayID > 0) {
         Label check = new Label("Are you sure you want to delete the current Area?");
         Button delete = new Button("Delete");
@@ -247,7 +292,7 @@ public class ViewImpl extends Application implements ViewInterface {
     });
 
     VBox buttons = new VBox();
-    buttons.getChildren().addAll(addNewEvent, deleteAreaButton, editAreaButton);
+    buttons.getChildren().addAll(addNewEvent, deleteArea, editArea);
     buttons.setMinHeight(addNewEventHeight);
 
     Pane currentAreaInfo = new Pane();
@@ -365,8 +410,88 @@ public class ViewImpl extends Application implements ViewInterface {
         HBox text = new HBox();
         text.getChildren().addAll(name, desp, location, date, time);
 
+        Button editEvent = new Button("Edit");
+        editEvent.setOnAction(event1 -> {
+          EventData toEdit = events.get(event.getEventId() - 1);
+
+          GridPane windowRoot = new GridPane();
+
+          Label nameLabel = new Label("Edit Event Name:");
+          windowRoot.add(nameLabel, 0, 0);
+
+          Label despLabel = new Label("Edit Event Description:");
+          windowRoot.add(despLabel, 0, 1);
+
+          Label locationLabel = new Label("Edit Event Location");
+          windowRoot.add(locationLabel, 0, 2);
+
+          TextField nameField = new TextField(toEdit.getEventName());
+          windowRoot.add(nameField, 1, 0);
+
+          TextField despField = new TextField(toEdit.getEventDescription());
+          windowRoot.add(despField, 1, 1);
+
+          TextField locationField = new TextField(toEdit.getEventLocation());
+          windowRoot.add(locationField, 1, 2);
+
+          Button submit = new Button("Submit");
+          windowRoot.add(submit, 2, 0);
+
+          Button cancel = new Button("Cancel");
+          windowRoot.add(cancel, 2, 1);
+
+          Scene windowScene = new Scene(windowRoot);
+          Stage window = new Stage();
+          window.setScene(windowScene);
+          window.setTitle("Edit Current Event");
+          window.initModality(Modality.APPLICATION_MODAL);
+
+          submit.setOnAction(event12 -> {
+            window.close();
+            EventData toSend = new EventDataImpl(displayID, toEdit.getEventId(), nameField.getText(),
+                    despField.getText(), locationField.getText(), toEdit.getEventDateAndTime());
+            model.editEvent(toSend);
+            receiveEvents(model.outputEvents(new AreaDataImpl(displayID, "", "")));
+          });
+
+          cancel.setOnAction(event13 -> {
+            window.close();
+          });
+
+          window.show();
+        });
+
+        Button deleteEvent = new Button("Delete");
+        deleteEvent.setOnAction(event1 -> {
+          Label check = new Label("Are you sure you want to delete the current Event?");
+          Button delete = new Button("Delete");
+          Button cancel = new Button("Cancel");
+
+          HBox buttons = new HBox(delete, cancel);
+          VBox windowRoot = new VBox(check, buttons);
+
+          Scene windowScene = new Scene(windowRoot);
+          Stage window = new Stage();
+          window.setScene(windowScene);
+
+          delete.setOnAction(event2 -> {
+            EventData toSend = new EventDataImpl(displayID, event.getEventId(), "", "", "", new int[]{1, 1, 1, 0, 0, 0});
+            model.deleteEvent(toSend);
+            receiveEvents(model.outputEvents(new AreaDataImpl(displayID, "", "")));
+            window.close();
+          });
+
+          cancel.setOnAction(event3 -> {
+            window.close();
+          });
+
+          window.setTitle("Delete Event");
+          window.initModality(Modality.APPLICATION_MODAL);
+          window.show();
+        });
+
         StackPane stack = new StackPane();
-        stack.getChildren().addAll(background, text);
+        stack.getChildren().addAll(background, text, deleteEvent, editEvent);
 
         internalVBox.getChildren().add(stack);
       }

@@ -298,7 +298,7 @@ public class ModelImpl implements ModelInterface {
     if (convention == 1) {
       hour += 12;
     }
-    System.out.print(String.format("%02d-%02d-%02dT%02d:%02d:00", year, month, day, hour, minute));
+
     return String.format("%02d-%02d-%02dT%02d:%02d:00", year, month, day, hour, minute);
   }
 
