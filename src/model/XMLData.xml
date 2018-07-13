@@ -1,29 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="XMLDataSchema.xml">
-  <area id="1">
-    <name>banana</name>
-    <description />
-    <event id="01">
-      <name>nate</name>
-      <description>blah</description>
-      <date-time>2017-05-23T04:09:00</date-time>
-      <location>blah</location>
-    </event>
-  </area>
-  <area id="2">
-    <name>hanana</name>
-    <description />
-    <event id="01">
-      <name>kate</name>
-      <description>blah</description>
-      <date-time>2017-05-23T04:09:00</date-time>
-      <location>blah</location>
-    </event>
-    <event id="11">
-      <name>abby</name>
-      <description>blah</description>
-      <date-time>2017-05-23T04:09:00</date-time>
-      <location>blah</location>
-    </event>
-  </area>
+
 </root>

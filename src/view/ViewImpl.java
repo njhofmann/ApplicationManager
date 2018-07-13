@@ -6,6 +6,7 @@ import java.util.List;
 import datatransfer.AreaData;
 import datatransfer.AreaDataImpl;
 import datatransfer.EventData;
+import datatransfer.EventDataImpl;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -110,7 +111,7 @@ public class ViewImpl extends Application implements ViewInterface {
       Label nameLabel = new Label("New Area Name:");
       newAreaWindowRoot.add(nameLabel, 0, 0);
 
-      Label despLabel = new Label("New Area Desp:");
+      Label despLabel = new Label("New Area Description:");
       newAreaWindowRoot.add(despLabel, 0, 1);
 
       TextField nameField = new TextField();
@@ -158,7 +159,50 @@ public class ViewImpl extends Application implements ViewInterface {
     Button addNewEvent = new Button("Add New Event");
     addNewEvent.setOnAction(event -> {
       if (displayID > 0) {
+        GridPane windowRoot = new GridPane();
 
+        Label nameLabel = new Label("New Event Name:");
+        windowRoot.add(nameLabel, 0, 0);
+
+        Label despLabel = new Label("New Event Description:");
+        windowRoot.add(despLabel, 0, 1);
+
+        Label locationLabel = new Label("New Event Location:");
+        windowRoot.add(locationLabel, 0, 2);
+
+        TextField nameField = new TextField();
+        windowRoot.add(nameField, 1, 0);
+
+        TextField despField = new TextField();
+        windowRoot.add(despField, 1, 1);
+
+        TextField locationField = new TextField();
+        windowRoot.add(locationField, 1, 2);
+
+        Button submit = new Button("Submit");
+        windowRoot.add(submit, 2, 0);
+
+        Button cancel = new Button("Cancel");
+        windowRoot.add(cancel, 2, 1);
+
+        Scene windowScene = new Scene(windowRoot);
+        Stage addEventWindow = new Stage();
+        addEventWindow.setScene(windowScene);
+        addEventWindow.setTitle("Add New Event");
+        addEventWindow.initModality(Modality.APPLICATION_MODAL);
+
+        submit.setOnAction(event12 -> {
+          addEventWindow.close();
+          EventData toSend = new EventDataImpl(displayID, 0, nameField.getText(), despField.getText(), locationField.getText(), new int[]{2017, 5, 23, 5, 5, 0});
+          model.addEvent(toSend);
+          receiveEvents(model.outputEvents(new AreaDataImpl(displayID, "", "")));
+        });
+
+        cancel.setOnAction(event1 -> {
+          addEventWindow.close();
+        });
+
+        addEventWindow.show();
       }
     });
     addNewEvent.setMinWidth(addNewEventWidth);
@@ -174,7 +218,6 @@ public class ViewImpl extends Application implements ViewInterface {
     eventsDisplay.setMinWidth(eventsDisplayWidth);
     eventsDisplay.setMinHeight(eventsDisplayHeight);
 
-    eventVBox.setSpacing(0);
     eventVBox.getChildren().addAll(eventHeader, eventsDisplay);
 
     root.setLeft(areaVBox);
@@ -211,7 +254,7 @@ public class ViewImpl extends Application implements ViewInterface {
       for (AreaData area : this.areas) {
         Text areaName = new Text(area.getAreaName());
 
-        int backgroundWidth = (int)(areaWidth - areasDisplay.getViewportBounds().getWidth());
+        int backgroundWidth = areaWidth;
         int backgroundHeight = 50;
         Button background = new Button();
         background.setMinHeight(backgroundHeight);

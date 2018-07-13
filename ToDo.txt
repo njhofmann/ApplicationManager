@@ -1,3 +1,4 @@
+-Add date and time selection to event adding
 -From view, ability to edit areas and events
 -From view, add ability to delete areas and events
 -Revamp display

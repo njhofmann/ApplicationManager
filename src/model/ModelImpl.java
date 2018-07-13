@@ -321,7 +321,7 @@ public class ModelImpl implements ModelInterface {
     Element associatedArea = getAreaElement(areaID);
 
     Element newEvent = new Element("event");
-    newEvent.setAttribute("id", Integer.toString(associatedArea.getChildren("event").size()) + 1);
+    newEvent.setAttribute("id", Integer.toString(associatedArea.getChildren("event").size() + 1));
 
     Element eventNameElement = new Element("name").setText(eventName);
     newEvent.addContent(eventNameElement);
