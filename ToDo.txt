@@ -2,3 +2,4 @@
 -Revamp display, make all scroll panels scroll-vertical only
 -Add proper documentation and abstraction in view
 -Complete AreaData, EventData, and ModelImpl tests
+-Change date & time support to offical java types
