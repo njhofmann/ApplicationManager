@@ -306,7 +306,7 @@ public class ViewImpl extends Application implements ViewInterface {
                   despField.getText(), locationField.getText(), new int[]{year, month, day, hour,
                   minute, timeConventionValue});
           model.addEvent(toSend);
-          receiveEvents(model.outputEvents(new AreaDataImpl(displayID, "", "")));
+          receiveEvents(model.outputEvents(displayID));
         });
 
         cancel.setOnAction(event1 -> {
@@ -406,9 +406,8 @@ public class ViewImpl extends Application implements ViewInterface {
           // display all its Areas. The just deleted Area should no longer be included in the new
           // batch of Areas.
           window.close();
-          AreaData toSend = new AreaDataImpl(displayID, "", "");
           displayID = 0;
-          model.deleteArea(toSend);
+          model.deleteArea(displayID);
           receiveAreas(model.outputAreas());
         });
 
@@ -497,8 +496,7 @@ public class ViewImpl extends Application implements ViewInterface {
           currentAreaInfo.setContent(text);
 
           // Send a request to the model for Event's associated with the Area that was just clicked.
-          AreaData areaID = new AreaDataImpl(displayID, "", "");
-          List<EventData> eventsToDisplay = model.outputEvents(areaID);
+          List<EventData> eventsToDisplay = model.outputEvents(displayID);
 
           // Display the received events.
           receiveEvents(eventsToDisplay);
@@ -663,7 +661,7 @@ public class ViewImpl extends Application implements ViewInterface {
                     despField.getText(), locationField.getText(), new int[]{newYear, newMonth,
                     newDay, newHour, newMinute, newTimeConventionValue});
             model.editEvent(toSend);
-            receiveEvents(model.outputEvents(new AreaDataImpl(displayID, "", "")));
+            receiveEvents(model.outputEvents(displayID));
           });
 
           cancel.setOnAction(event13 -> {
@@ -691,9 +689,8 @@ public class ViewImpl extends Application implements ViewInterface {
           window.setScene(windowScene);
 
           delete.setOnAction(event2 -> {
-            EventData toSend = new EventDataImpl(displayID, event.getEventId(), "", "", "", new int[]{1, 1, 1, 0, 0, 0});
-            model.deleteEvent(toSend);
-            receiveEvents(model.outputEvents(new AreaDataImpl(displayID, "", "")));
+            model.deleteEvent(displayID, event.getEventId());
+            receiveEvents(model.outputEvents(displayID));
             window.close();
           });
 

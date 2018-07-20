@@ -1,5 +1,5 @@
--Add date and time selection to event adding and editing
--Revamp display, make all scroll panels scroll-vertical only
+-Change date & time support to LocalDateAndTime
+-For view, load events of all areas - reload only when an edit is made
+-Redo documentation for above changes
 -Add proper documentation and abstraction in view
 -Complete AreaData, EventData, and ModelImpl tests
--Change date & time support to offical java types

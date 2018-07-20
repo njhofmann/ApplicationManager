@@ -160,6 +160,22 @@ public class ModelImpl implements ModelInterface {
     }
   }
 
+  /**
+   * Checks if a given integer represents the ID of a possible valid existing Area. Only checks if
+   * given ID is >= 0, else throws a specified error.
+   * @param areaID possible ID to check
+   * @throws IllegalArgumentException if given ID is non-positive
+   */
+  private void validExistingAreaID(int areaID) {
+    if (areaID == 0) {
+      throw new IllegalArgumentException("The ID of any Area that is apart of this model can't" +
+              " have the ID dedicated to creating new Areas - i.e. no Area can have ID of zero!");
+    }
+    else if (areaID < 0) {
+      throw new IllegalArgumentException("An existing Area's ID must be greater than 0!");
+    }
+  }
+
   @Override
   public void openModelData() {
     try{
@@ -368,15 +384,8 @@ public class ModelImpl implements ModelInterface {
   }
 
   @Override
-  public void deleteArea(AreaData data) {
-    validAreaData(data);
-
-    int areaID = data.getAreaId();
-
-    if (areaID == 0) {
-      throw new IllegalArgumentException("No Area that is apart of this model can have the ID" +
-              "dedicated to new Areas - i.e. no Area can have ID of zero!");
-    }
+  public void deleteArea(int areaID) {
+    validExistingAreaID(areaID);
 
     Element areaToRemove = getAreaElement(areaID);
     modelData.getRootElement().removeContent(areaToRemove);
@@ -392,19 +401,15 @@ public class ModelImpl implements ModelInterface {
   }
 
   @Override
-  public void deleteEvent(EventData data) {
-    validEventData(data);
+  public void deleteEvent(int areaID, int eventID) {
+    validExistingAreaID(areaID);
 
-    int areaID = data.getAssociatedAreaId();
-    int eventID = data.getEventId();
-
-    if (areaID == 0) {
-      throw new IllegalArgumentException("No Area that is apart of this model can have the ID" +
-              "dedicated to new Areas - i.e. no Area can have ID of zero!");
+    if (eventID == 0) {
+      throw new IllegalArgumentException("The ID of any Event that is apart of this model can't " +
+              "have the ID dedicated to creating new Events - i.e. no Event can have ID of zero!");
     }
-    else if (eventID == 0) {
-      throw new IllegalArgumentException("No Event that is apart of this model can have the ID" +
-              "dedicated to new Events - i.e. no Event can have ID of zero!");
+    else if (eventID < 0) {
+      throw new IllegalArgumentException("An existing Event's ID must be greater than 0!");
     }
 
     Element associatedArea = getAreaElement(areaID);
@@ -439,8 +444,9 @@ public class ModelImpl implements ModelInterface {
   }
 
   @Override
-  public List<EventData> outputEvents(AreaData data) {
-    int areaID = data.getAreaId();
+  public List<EventData> outputEvents(int areaID) {
+    validExistingAreaID(areaID);
+
     Element area = getAreaElement(areaID);
 
     List<EventData> toReturn = new ArrayList<>();
