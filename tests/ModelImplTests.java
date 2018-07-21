@@ -312,18 +312,13 @@ public class ModelImplTests {
   }
 
   // Invalid removing Area operations...
-  // ...trying to remove an Area with a null AreaData
-  @Test(expected = IllegalArgumentException.class)
-  public void removeAreaWithNullAreaData() {
-    model.deleteArea(null);
-  }
 
   // ...trying to remove an Area that isn't apart of the model (ID of AreaData isn't in the model)
   @Test(expected = IllegalArgumentException.class)
   public void removeAreaWithUnaddedID() {
     model.addArea(areaData);
     areaData = new AreaDataImpl(2, "", "");
-    model.deleteArea(areaData);
+    model.deleteArea(areaData.getAreaId());
   }
 
   // ...trying to remove an Area with an AreaData whose ID is the dedicated ID for a new Area, zero
@@ -331,7 +326,7 @@ public class ModelImplTests {
   public void removeAreaWithAreaDataWithZeroID() {
     model.addArea(areaData);
     areaData = new AreaDataImpl(0, "", "");
-    model.deleteArea(areaData);
+    model.deleteArea(areaData.getAreaId());
   }
 
   // Valid removing Area operations...
@@ -347,7 +342,7 @@ public class ModelImplTests {
             "</root>\r\n");
 
     areaData = new AreaDataImpl(1, "", "");
-    model.deleteArea(areaData);
+    model.deleteArea(areaData.getAreaId());
     assertEquals(model.outputModelDataAsString(),
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<root />\r\n");
   }
@@ -377,7 +372,7 @@ public class ModelImplTests {
             "</root>\r\n");
 
     areaData = new AreaDataImpl(2, "", "");
-    model.deleteArea(areaData);
+    model.deleteArea(areaData.getAreaId());
     assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
             "<root><area id=\"1\"><name>test</name><description>testing</description></area>" +
             "<area id=\"2\"><name>test</name><description>testing</description></area>" +
@@ -410,20 +405,20 @@ public class ModelImplTests {
             "</root>\r\n");
 
     areaData = new AreaDataImpl(2, "", "");
-    model.deleteArea(areaData);
+    model.deleteArea(areaData.getAreaId());
     assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
             "<root><area id=\"1\"><name>test</name><description>testing</description></area>" +
             "<area id=\"2\"><name>test</name><description>testing</description></area>" +
             "</root>\r\n");
 
     areaData = new AreaDataImpl(2, "", "");
-    model.deleteArea(areaData);
+    model.deleteArea(areaData.getAreaId());
     assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
             "<root><area id=\"1\"><name>test</name><description>testing</description></area>" +
             "</root>\r\n");
 
     areaData = new AreaDataImpl(1, "", "");
-    model.deleteArea(areaData);
+    model.deleteArea(areaData.getAreaId());
     assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
             "<root />\r\n");
   }
@@ -456,20 +451,20 @@ public class ModelImplTests {
             "</root>\r\n");
 
     areaData = new AreaDataImpl(2, "", "");
-    model.deleteArea(areaData);
+    model.deleteArea(areaData.getAreaId());
     assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
             "<root><area id=\"1\"><name>test</name><description>testing</description></area>" +
             "<area id=\"2\"><name>pen</name><description></description></area>" +
             "</root>\r\n");
 
     areaData = new AreaDataImpl(1, "", "");
-    model.deleteArea(areaData);
+    model.deleteArea(areaData.getAreaId());
     assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
             "<root><area id=\"1\"><name>pen</name><description></description></area>" +
             "</root>\r\n");
 
     areaData = new AreaDataImpl(1, "", "");
-    model.deleteArea(areaData);
+    model.deleteArea(areaData.getAreaId());
     assertEquals(model.outputModelDataAsString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
             "<root />\r\n");
   }

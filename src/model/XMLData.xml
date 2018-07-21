@@ -4,10 +4,10 @@
     <name>Banana</name>
     <description>Pie</description>
     <event id="1">
-      <name />
-      <description />
-      <date-time>2018-07-27T17:58:00</date-time>
-      <location />
+      <name>hi</name>
+      <description>ban</description>
+      <date-time>2018-07-27T17:59:00</date-time>
+      <location>people</location>
     </event>
     <event id="2">
       <name />

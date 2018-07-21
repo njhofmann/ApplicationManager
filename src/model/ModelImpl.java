@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -264,7 +265,7 @@ public class ModelImpl implements ModelInterface {
   /**
    * Helper method for converting a date and time array from an EventData into a properly
    * formatted String to be stored in the XML file.
-   * @param dateAndTimeArray integer array containing info for some date and time of an event
+   * @param dateTime integer array containing info for some date and time of an event
    * @return String representation of the given date and time info
    * @throws IllegalArgumentException if date and time array is null or not of length 6, or if
    *         any of the info stored inside the array doesn't fall within the appropriate range:
@@ -275,21 +276,16 @@ public class ModelImpl implements ModelInterface {
    *         -minute - [0, 59]
    *         -time convention - 0 or 1
    */
-  private String dateAndTimeArrayToString(int[] dateAndTimeArray) {
-    if (dateAndTimeArray == null) {
+  private String dateAndTimeArrayToString(LocalDateTime dateTime) {
+    if (dateTime == null) {
       throw new IllegalArgumentException("Given date and time array can't be null!");
     }
-    else if (dateAndTimeArray.length != 6) {
-      throw new IllegalArgumentException("Given date and time array must be of length 6 " +
-              "- must have a year, month, day, hour, minute, and AM / PM time convention!");
-    }
 
-    int year = dateAndTimeArray[0];
-    int month = dateAndTimeArray[1];
-    int day = dateAndTimeArray[2];
-    int hour = dateAndTimeArray[3];
-    int minute = dateAndTimeArray[4];
-    int convention = dateAndTimeArray[5];
+    int year = dateTime.getYear();
+    int month = dateTime.getMonthValue();
+    int day = dateTime.getDayOfMonth();
+    int hour = dateTime.getHour();
+    int minute = dateTime.getMinute();
 
     if (year < 0) {
       throw new IllegalArgumentException("Can't have a negative year!");
@@ -300,19 +296,11 @@ public class ModelImpl implements ModelInterface {
     else if (!(1 <= day && day <= 31)) {
       throw new IllegalArgumentException("A day must be in the range [1, 31]!");
     }
-    else if (!(0 <= hour && hour <= 12)) {
-      throw new IllegalArgumentException("A hour must be in the range [0, 12]");
+    else if (!(0 <= hour && hour <= 23)) {
+      throw new IllegalArgumentException("A hour must be in the range [0, 23]");
     }
     else if (!(0 <= minute && minute <= 59)) {
       throw new IllegalArgumentException("A minute must be in the range [0, 59]");
-    }
-    else if (convention != 0 && convention != 1) {
-      throw new IllegalArgumentException("A time convention must either be a 0 for AM or " +
-              "a 1 for PM!");
-    }
-
-    if (convention == 1) {
-      hour += 12;
     }
 
     return String.format("%02d-%02d-%02dT%02d:%02d:00", year, month, day, hour, minute);
@@ -328,7 +316,7 @@ public class ModelImpl implements ModelInterface {
     String eventName = data.getEventName();
     String eventDesp = data.getEventDescription();
     String eventLocation = data.getEventLocation();
-    int[] eventDateAndTime = data.getEventDateAndTime();
+    LocalDateTime eventDateAndTime = data.getEventDateAndTime();
 
     if (eventID > 0) {
       throw new IllegalArgumentException("Given event data doesn't represent a new event!");
@@ -364,7 +352,7 @@ public class ModelImpl implements ModelInterface {
     String editEventName = data.getEventName();
     String editEventDesp = data.getEventDescription();
     String editEventLocation = data.getEventLocation();
-    int[] editEventDateAndTime = data.getEventDateAndTime();
+    LocalDateTime editEventDateAndTime = data.getEventDateAndTime();
 
     if (eventID == 0) {
       throw new IllegalArgumentException("Given event data represents a new event that isn't" +
@@ -464,19 +452,10 @@ public class ModelImpl implements ModelInterface {
       int day = Integer.parseInt(dateAndTimeString.substring(8, 10));
       int hour = Integer.parseInt(dateAndTimeString.substring(11, 13));
       int minute = Integer.parseInt(dateAndTimeString.substring(14, 16));
-      int convention;
 
-      if (hour > 12) {
-        hour -= 12;
-        convention = 1;
-      }
-      else {
-        convention = 0;
-      }
+      LocalDateTime dateTime = LocalDateTime.of(year, month, day, hour, minute);
 
-      int[] dateAndTime = new int[]{year, month, day, hour, minute, convention};
-
-      EventData toAdd = new EventDataImpl(areaID, id, name, desp, location, dateAndTime);
+      EventData toAdd = new EventDataImpl(areaID, id, name, desp, location, dateTime);
       toReturn.add(toAdd);
     }
 

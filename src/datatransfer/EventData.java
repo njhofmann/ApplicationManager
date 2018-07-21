@@ -1,5 +1,7 @@
 package datatransfer;
 
+import java.time.LocalDateTime;
+
 /**
  * Represents the data of some event of a "Area of interest" being sent from a view to a model
  * to process into this ApplicationManager's data model, or from a model to a view to be displayed
@@ -45,5 +47,5 @@ public interface EventData {
    * year, month, day, hour, and minute. Will be of length 6 long.
    * @return date and time of this associated event
    */
-  int[] getEventDateAndTime();
+  LocalDateTime getEventDateAndTime();
 }

@@ -1,5 +1,7 @@
 package datatransfer;
 
+import java.time.LocalDateTime;
+
 /**
  * An implementation of the EventData interface, holds all the data for some Event of some "Area
  * of interest" - stores its ID, associated Area's ID, name, location, description, and data and
@@ -35,7 +37,7 @@ public class EventDataImpl implements EventData {
   /**
    * The date and time of the Event this EventData represents.
    */
-  private final int[] dateAndTime;
+  private final LocalDateTime dateAndTime;
 
   /**
    * Default constructor of this EventDataImpl, takes in some information about some Event to
@@ -53,7 +55,7 @@ public class EventDataImpl implements EventData {
    *                                  proper time convention (AM or PM).
    */
   public EventDataImpl(int areaID, int id, String name, String desp, String location,
-                       int[] dateAndTime) {
+                       LocalDateTime dateAndTime) {
     if (areaID <= 0) {
       throw new IllegalArgumentException("The Area this Event is associated with must actually" +
               "exist, can't have a non-positive (including zero) ID!");
@@ -64,14 +66,6 @@ public class EventDataImpl implements EventData {
     else if (name == null || desp == null || location == null || dateAndTime == null) {
       throw new IllegalArgumentException("Given name, description, location, and / or " +
               "date and time can't be null!");
-    }
-    else if (dateAndTime.length != 6) {
-      throw new IllegalArgumentException("Given date and time array must contain 5 items - " +
-              "a year, a month, a day, a hour, a minute, and AM or PM!");
-    }
-    else if (dateAndTime[5] != 0 && dateAndTime[5] != 1) {
-      throw new IllegalArgumentException("Time convention of the given date and time must be" +
-              "either 0 for AM or 1 or PM!");
     }
 
     this.areaID = areaID;
@@ -108,7 +102,7 @@ public class EventDataImpl implements EventData {
   }
 
   @Override
-  public int[] getEventDateAndTime() {
+  public LocalDateTime getEventDateAndTime() {
     return dateAndTime;
   }
 }

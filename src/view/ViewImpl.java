@@ -1,6 +1,7 @@
 package view;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -288,23 +289,17 @@ public class ViewImpl extends Application implements ViewInterface {
           addEventWindow.close();
 
           LocalDate dateInfo = datePicker.getValue();
-          int year = dateInfo.getYear();
-          int month = dateInfo.getMonthValue();
-          int day = dateInfo.getDayOfMonth();
           int hour = (int)hours.getValue();
           int minute = (int)mins.getValue();
 
-          int timeConventionValue;
-          if (timeConvention.getText().equals("AM")) {
-            timeConventionValue = 0;
-          }
-          else {
-            timeConventionValue = 1;
+          if (timeConvention.getText().equals("PM")) {
+            hour += 12;
           }
 
+          LocalDateTime dateTime = dateInfo.atTime(hour, minute);
+
           EventData toSend = new EventDataImpl(displayID, 0, nameField.getText(),
-                  despField.getText(), locationField.getText(), new int[]{year, month, day, hour,
-                  minute, timeConventionValue});
+                  despField.getText(), locationField.getText(), dateTime);
           model.addEvent(toSend);
           receiveEvents(model.outputEvents(displayID));
         });
@@ -540,24 +535,32 @@ public class ViewImpl extends Application implements ViewInterface {
         Text desp = new Text("Event Desp: " + event.getEventDescription());
         Text location = new Text("Event Location: " + event.getEventLocation());
 
-        int[] dateAndTimeInfo = event.getEventDateAndTime();
-        int year = dateAndTimeInfo[0];
-        int month = dateAndTimeInfo[1];
-        int day = dateAndTimeInfo[2];
-        int hour = dateAndTimeInfo[3];
-        int minute = dateAndTimeInfo[4];
-        int timeConvention = dateAndTimeInfo[5];
+        LocalDateTime dateTimeInfo = event.getEventDateAndTime();
+        int year = dateTimeInfo.getYear();
+        int month = dateTimeInfo.getMonthValue();
+        int day = dateTimeInfo.getDayOfMonth();
+        int hour = dateTimeInfo.getHour();
+        int minute = dateTimeInfo.getMinute();
 
+        final int finalHour;
         String timeConventionString;
-        if (timeConvention == 0) {
+
+        if (hour < 12) {
           timeConventionString = "AM";
         }
         else {
           timeConventionString = "PM";
         }
 
+        if (timeConventionString.equals("PM") && 13 <= hour && hour <= 23) {
+          finalHour = hour - 12;
+        }
+        else {
+          finalHour = hour;
+        }
+
         Text date = new Text(String.format("Date: %d/%d/%d", month, day, year));
-        Text time = new Text(String.format("Time: %d:%02d %s", hour, minute, timeConventionString));
+        Text time = new Text(String.format("Time: %d:%02d %s", finalHour, minute, timeConventionString));
 
         // Button to edit this Event.
         Button editEvent = new Button("Edit");
@@ -592,7 +595,7 @@ public class ViewImpl extends Application implements ViewInterface {
           GridPane.setHalignment(editDateLabel, HPos.CENTER);
 
           // Need to set with local date time
-          DatePicker datePicker = new DatePicker();
+          DatePicker datePicker = new DatePicker(dateTimeInfo.toLocalDate());
           windowRoot.add(datePicker, 1, 3);
 
           Label editTimeLabel = new Label("New Event Time: ");
@@ -604,8 +607,15 @@ public class ViewImpl extends Application implements ViewInterface {
           windowRoot.add(hoursLabel, 0, 5);
           GridPane.setHalignment(hoursLabel, HPos.RIGHT);
 
-          Spinner hours = new Spinner(TimeSpinnerValueFactory.getAMSpinnerValues());
+          Spinner hours = new Spinner();
           windowRoot.add(hours, 1, 5);
+
+          if (timeConventionString.equals("AM")) {
+            hours.setValueFactory(TimeSpinnerValueFactory.getAMSpinnerValues());
+          }
+          else {
+            hours.setValueFactory(TimeSpinnerValueFactory.getPMSpinnerValues());
+          }
 
           Label minutesLabel = new Label("Minutes: ");
           windowRoot.add(minutesLabel, 0, 6);
@@ -624,7 +634,7 @@ public class ViewImpl extends Application implements ViewInterface {
 
           TimeConventionEventHandler timeConventionEventHandler =
                   new TimeConventionEventHandler(editTimeConvention, hours);
-          hours.getValueFactory().setValue(hour);
+          hours.getValueFactory().setValue(finalHour);
           editTimeConvention.setOnAction(timeConventionEventHandler);
 
           Button submit = new Button("Submit");
@@ -643,23 +653,17 @@ public class ViewImpl extends Application implements ViewInterface {
             window.close();
 
             LocalDate dateInfo = datePicker.getValue();
-            int newYear = dateInfo.getYear();
-            int newMonth = dateInfo.getMonthValue();
-            int newDay = dateInfo.getDayOfMonth();
             int newHour = (int)hours.getValue();
             int newMinute = (int)mins.getValue();
 
-            int newTimeConventionValue;
-            if (editTimeConvention.getText().equals("AM")) {
-              newTimeConventionValue = 0;
-            }
-            else {
-              newTimeConventionValue = 1;
+            if (timeConventionString.equals("PM") && 1 <= newHour && newHour <= 11) {
+              newHour += 12;
             }
 
+            LocalDateTime dateTime = dateInfo.atTime(newHour, newMinute);
+
             EventData toSend = new EventDataImpl(displayID, toEdit.getEventId(), nameField.getText(),
-                    despField.getText(), locationField.getText(), new int[]{newYear, newMonth,
-                    newDay, newHour, newMinute, newTimeConventionValue});
+                    despField.getText(), locationField.getText(), dateTime);
             model.editEvent(toSend);
             receiveEvents(model.outputEvents(displayID));
           });
