@@ -4,6 +4,7 @@ import java.util.List;
 
 import datatransfer.AreaData;
 import datatransfer.EventData;
+import javafx.scene.Parent;
 import model.ModelInterface;
 
 /**
@@ -12,19 +13,7 @@ import model.ModelInterface;
  * change this AM's data, only what changes the user wishes to make.
  */
 public interface ViewInterface {
-
-  /**
-   * Sets the Model this View is associated with, Model gives the data for the View to display.
-   * @param model
-   */
-  void setAssociatedModel(ModelInterface model);
-
-  /**
-   * Starts displaying this View's contents.
-   */
-  void start();
-
-  /**
+  /*
    * Receives a list of AreaDatas representing all the Areas stored in the corresponding model to
    * display in this View.
    * @param areas list representing all Areas stored
@@ -40,4 +29,23 @@ public interface ViewInterface {
    *         aren't from the same Area (i.e. all don't have the same AreaID)
    */
   void receiveEvents(List<EventData> events);
+
+  /**
+   * Returns this View as a JavaFX parent object if being used as the header of a JavaFX
+   * environment.
+   * @return this View as a JavaFX parent object
+   */
+  Parent asParent();
+
+  /**
+   * Retrieves the current width of this View, given that it is displayed as a window.
+   * @return current width of view
+   */
+  int getWidth();
+
+  /**
+   * Retrieves the current height of this View, given that it is displayed as a window.
+   * @return current height of view
+   */
+  int getHeight();
 }

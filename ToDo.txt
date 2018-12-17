@@ -3,3 +3,4 @@
 -Redo documentation for above changes
 -Add proper documentation and abstraction in view
 -Complete AreaData, EventData, and ModelImpl tests
+-Update javadocs with links

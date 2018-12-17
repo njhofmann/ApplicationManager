@@ -9,12 +9,12 @@ import datatransfer.AreaData;
 import datatransfer.AreaDataImpl;
 import datatransfer.EventData;
 import datatransfer.EventDataImpl;
-import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
@@ -36,21 +36,21 @@ import javafx.stage.Stage;
 import model.ModelInterface;
 
 /**
- *
+ * Implementation of the ViewInterface, as a JavaFX GUI.
  */
-public class ViewImpl extends Application implements ViewInterface {
+public class ViewImpl implements ViewInterface {
 
   /**
    * The model this View is associated with.
    */
-  private static ModelInterface model;
+  private final ModelInterface model;
 
   /**
    * The AreaDatas whose data s currently being displayed. Static variable since when launching an
    * application, a new instance of that application is created, must be static so <i>any</i>
    * ViewImpl instance can access the areas that need to be displayed.
    */
-  private List<AreaData> areas = new ArrayList<>();
+  private List<AreaData> areas;
 
   /**
    * The ID of the Area whose events are currently being displayed. If 0, indicated no Area is 
@@ -62,7 +62,7 @@ public class ViewImpl extends Application implements ViewInterface {
    * The EventDatas whose data is currently being display, are the Events of the AreaData whose ID
    * is equal to displayID.
    */
-  private List<EventData> events = new ArrayList<>();
+  private List<EventData> events;
 
   /**
    * ScrollPane displaying the data in each AreaData in areas.
@@ -83,42 +83,58 @@ public class ViewImpl extends Application implements ViewInterface {
   /**
    * The total width of this application's window.
    */
-  private final int totalWidth = 700;
+  private final int totalWidth;
 
   /**
    * The total height of this application's window.
    */
-  private final int totalHeight = 500;
+  private final int totalHeight;
 
   /**
    * The total width of area of this application delegated to displaying what Areas a user may
    * select from.
    */
-  private final int areaWidth = 200;
+  private final int areaWidth;
 
   /**
    * The total width of area of this application delegated to displaying what the Events of the
    * currently selected Area.
    */
-  private final int eventWidth = totalWidth - areaWidth;
+  private final int eventWidth;
 
   /**
    * Universal value for any padding in this Display.
    */
-  private final int paddingValue = 5;
+  private final int paddingValue;
 
-  @Override
-  public void init() {
+  /**
+   * Root frame of this view.
+   */
+  private final BorderPane root;
+
+
+  public ViewImpl(ModelInterface model) {
+    if (model == null) {
+      throw new IllegalArgumentException("Given model can't be null!");
+    }
+    this.model = model;
+
+    // Set constants
+    areas = new ArrayList<>();
+    events = new ArrayList<>();
+    totalWidth = 700;
+    totalHeight = 500;
+    areaWidth = 200;
+    eventWidth = totalWidth - areaWidth;
+    paddingValue = 5;
+
     areasDisplay = new ScrollPane();
     eventsDisplay = new ScrollPane();
     currentAreaInfo = new ScrollPane();
-  }
 
-  @Override
-  public void start(Stage primaryStage) {
     // Root pane to display all this application's content. Split into an area to display all Areas,
     // and an area to display all the Events of a selected Area - and the Area's own info.
-    BorderPane root = new BorderPane();
+    root = new BorderPane();
 
     // Size parameters for buttons, internal containers, etc.
     int labelHeight = 10;
@@ -135,7 +151,7 @@ public class ViewImpl extends Application implements ViewInterface {
     int eventsDisplayHeight = totalHeight - buttonHeight;
 
     // Part of the root pane to display Areas.
-    // Button to add a new Area to the list of all Areas currently stored in the model.
+
     areasDisplay.setMinWidth(areasDisplayWidth);
     areasDisplay.setMinHeight(areasDisplayHeight);
     receiveAreas(model.outputAreas());
@@ -148,8 +164,7 @@ public class ViewImpl extends Application implements ViewInterface {
     areaVBox.setPrefHeight(totalHeight);
 
     // Part of the root pane to display Events.
-
-    // Button to add a new Area to the model as a whole.
+    // Button to add a new Area to the list of all Areas currently stored in the model.
     Button addNewArea = new Button("Add New Area");
     addNewArea.setPrefWidth(buttonWidth);
     addNewArea.setPrefHeight(buttonHeight / 4);
@@ -401,8 +416,8 @@ public class ViewImpl extends Application implements ViewInterface {
           // display all its Areas. The just deleted Area should no longer be included in the new
           // batch of Areas.
           window.close();
-          displayID = 0;
           model.deleteArea(displayID);
+          displayID = 0;
           receiveAreas(model.outputAreas());
         });
 
@@ -437,24 +452,6 @@ public class ViewImpl extends Application implements ViewInterface {
     // component displaying all Areas to the right part of the root pane.
     root.setLeft(areaVBox);
     root.setRight(eventVBox);
-
-    // Assign the root pane to a scene, and the scene to the primaryStage, then display the
-    // primaryStage.
-    Scene scene = new Scene(root, totalWidth, totalHeight);
-    primaryStage.setTitle("Application Manager");
-    primaryStage.setResizable(false);
-    primaryStage.setScene(scene);
-    primaryStage.show();
-  }
-
-  @Override
-  public void setAssociatedModel(ModelInterface model) {
-    ViewImpl.model = model;
-  }
-
-  @Override
-  public void start() {
-    launch();
   }
 
   @Override
@@ -728,8 +725,23 @@ public class ViewImpl extends Application implements ViewInterface {
     }
   }
 
+  @Override
+  public Parent asParent() {
+    return root;
+  }
+
+  @Override
+  public int getWidth() {
+    return totalWidth;
+  }
+
+  @Override
+  public int getHeight() {
+    return totalHeight;
+  }
+
   /**
-   *
+   * Custom event handler to deal with time conventions on a spinner for AM and PM times.
    */
   private class TimeConventionEventHandler implements EventHandler<ActionEvent> {
 
@@ -754,7 +766,10 @@ public class ViewImpl extends Application implements ViewInterface {
     }
   }
 
-
+  /**
+   * Custom spinner to deal with moving between different hours of AM and PM, and minutes in an
+   * hour.
+   */
   private static class TimeSpinnerValueFactory {
     public static SpinnerValueFactory<Integer> getAMSpinnerValues() {
       SpinnerValueFactory<Integer> toReturn = new SpinnerValueFactory<>() {
@@ -780,6 +795,9 @@ public class ViewImpl extends Application implements ViewInterface {
       return toReturn;
     }
 
+    /**
+     * Custom spinner to deal with moving between the hours of 1 to 12 for PM times.
+     */
     public static SpinnerValueFactory<Integer> getPMSpinnerValues() {
       SpinnerValueFactory<Integer> toReturn = new SpinnerValueFactory<>() {
         @Override
@@ -804,6 +822,9 @@ public class ViewImpl extends Application implements ViewInterface {
       return toReturn;
     }
 
+    /**
+     * Custom spinner to deal with moving between the minutes of 0 to 59.
+     */
     public static SpinnerValueFactory<Integer> getMinuteSpinnerValues() {
       SpinnerValueFactory<Integer> toReturn = new SpinnerValueFactory<Integer>() {
         @Override
