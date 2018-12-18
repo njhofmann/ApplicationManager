@@ -72,11 +72,13 @@ public interface ViewInterface {
   int getSelectedAreaID();
 
   /**
-   *
+   * Resets the area where the information of the currently selected Area is displayed.
    */
   void resetAreaDisplay();
 
+  /**
+   * Returns the ID of the Event last selected. If returns 0, indicated no Event has been selected.
+   * @return ID of Event last selected
+   */
   int getSelectedEventID();
-
-  void resetEventDisplay();
 }

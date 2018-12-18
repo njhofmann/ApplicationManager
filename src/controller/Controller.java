@@ -25,16 +25,15 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.ModelInterface;
 import view.ViewInterface;
 
 /**
- * Implementation of ControllerInterface, handling the interfacing between a given View and Model.
+ * Controller to handle the interfacing between a given View and Model.
  */
-public class Controller implements ControllerInterface {
+public class Controller {
 
   /**
    * The specific View this Controller is given to work with.
@@ -89,6 +88,9 @@ public class Controller implements ControllerInterface {
     view.assignButtonEvents(mapping);
   }
 
+  /**
+   * Action event handling the adding of a new Area to the Model.
+   */
   public class AddNewArea implements EventHandler<ActionEvent> {
 
     @Override
@@ -132,6 +134,9 @@ public class Controller implements ControllerInterface {
     }
   }
 
+  /**
+   * Action event handling the adding of a new Event to the Model, to an Area selected in the View.
+   */
   class AddNewEvent implements EventHandler<ActionEvent> {
 
     @Override
@@ -253,6 +258,10 @@ public class Controller implements ControllerInterface {
     }
   }
 
+  /**
+   * Action event handling the editing of an existing Event in the model, as per selected in
+   * the View.
+   */
   class EditArea implements EventHandler<ActionEvent> {
 
     @Override
@@ -298,6 +307,7 @@ public class Controller implements ControllerInterface {
           AreaData toSend = new AreaDataImpl(toEdit.getAreaId(), nameField.getText(),
               despField.getText());
           model.editArea(toSend);
+          view.resetAreaDisplay();
           view.receiveAreas(model.outputAreas());
         });
 
@@ -312,6 +322,9 @@ public class Controller implements ControllerInterface {
     }
   }
 
+  /**
+   * Action event handling the deletion of an Area from the Model, as per selected in the View.
+   */
   class DeleteArea implements EventHandler<ActionEvent> {
 
     @Override
@@ -355,6 +368,9 @@ public class Controller implements ControllerInterface {
     }
   }
 
+  /**
+   * Action event handling the editing of an Event in the Model, as per selected in the View.
+   */
   class EditEvent implements EventHandler<ActionEvent> {
 
     @Override
@@ -471,6 +487,9 @@ public class Controller implements ControllerInterface {
     }
   }
 
+  /**
+   * Action event handling the deletion of an Event in the Model, as per selected in the View.
+   */
   class DeleteEvent implements EventHandler<ActionEvent> {
 
     @Override
@@ -505,6 +524,10 @@ public class Controller implements ControllerInterface {
     }
   }
 
+  /**
+   * Action event handling the displaying of Events associated with a selected Area, as per selected
+   * in the View.
+   */
   class DisplayEvent implements EventHandler<ActionEvent> {
 
     @Override

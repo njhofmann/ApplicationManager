@@ -68,7 +68,7 @@ public interface ModelInterface {
   /**
    * Removes the Area with the associated ID from the given AreaData from this model. Ignores the
    * name and description parts of the AreaData.
-   * @param areaID
+   * @param areaID ID of associated Area to delete
    * @throws IllegalArgumentException if given AreaData is null, or if no Area with the given ID
    *         has been added to the model
    */
@@ -78,8 +78,8 @@ public interface ModelInterface {
    * Removes the Event with the associated Event ID from the Area with the matching Area ID, both
    * IDs are given by the input EventData. Ignores the name, description, location, and date & time
    * parts of the EventData.
-   * @param areaID
-   * @param eventID
+   * @param areaID ID of associated Area desired Event is associated with
+   * @param eventID ID of associated Event to delete
    * @throws IllegalArgumentException if given EventData is null, if no Area with the given Area ID
    *         has been added to the model, or if no Event with the given Event ID has been added to
    *         the Area with the given Area ID
@@ -96,7 +96,7 @@ public interface ModelInterface {
    * Outputs a list of EventDatas representing all the Events of a specific added Area, specified
    * Area is given by the ID of the given AreaData. The name and description of the given AreaData
    * are ignored.
-   * @param areaID
+   * @param areaID ID of associated Area to retrieve its associated Events from
    * @return list of EventDatas representing all the events of a specific Area, as given by the ID
    *         of the given AreaData
    * @throws IllegalArgumentException if given areaID is negative, or no Area in this model has an
@@ -105,9 +105,11 @@ public interface ModelInterface {
   List<EventData> outputEvents(int areaID);
 
   /**
-   *
-   * @param areaID
-   * @return
+   * Returns AreaData containing data of Area associated with given Area ID.
+   * @param areaID ID of associated Area to retrieve data from
+   * @return AreaData containing data of associated Area
+   * @throws IllegalArgumentException if given Area ID is negative or zero, or if model has no Area
+   *         associated with given ID
    */
   AreaData getAreaData(int areaID);
 

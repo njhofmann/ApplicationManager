@@ -242,15 +242,16 @@ public class ViewImpl implements ViewInterface {
         background.setMinWidth(backgroundWidth);
 
         // When Area button is clicked, display the Area's associated Events and own info.
-        background.setOnAction(event -> {
+        background.setOnAction((ActionEvent event) -> {
           currentAreaID = area.getAreaId();
           // Display the Area's own name and description.
           Text name = new Text("Name: " + area.getAreaName());
           Text desp = new Text("Description: " + area.getAreaDescription());
           VBox text = new VBox(name, desp);
           currentAreaInfo.setContent(text);
-          background.setOnAction(displayEventHandler);
-          background.fire();
+          Button dummy = new Button();
+          dummy.setOnAction(displayEventHandler);
+          dummy.fire();
         });
 
         StackPane toAdd = new StackPane();
@@ -433,11 +434,5 @@ public class ViewImpl implements ViewInterface {
   @Override
   public int getSelectedEventID() {
     return currentEventID;
-  }
-
-  @Override
-  public void resetEventDisplay() {
-    currentEventID = 0;
-    eventsDisplay.setContent(new Text());
   }
 }

@@ -1,5 +1,8 @@
 package controller;
 
+/**
+ * Enum listing all the different button events that may be assigned to / supported by a view.
+ */
 public enum ButtonEvents {
   DISPLAY,
   NEW_AREA,

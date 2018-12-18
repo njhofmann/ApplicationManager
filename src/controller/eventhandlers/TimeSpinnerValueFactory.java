@@ -3,8 +3,8 @@ package controller.eventhandlers;
 import javafx.scene.control.SpinnerValueFactory;
 
 /**
- * Custom spinner to deal with moving between different hours of AM and PM, and minutes in an
- * hour.
+ * Custom spinner factory to deal with moving between different hours of AM and PM, and minutes in
+ * an hour.
  */
 public class TimeSpinnerValueFactory {
   public static SpinnerValueFactory<Integer> getAMSpinnerValues() {
