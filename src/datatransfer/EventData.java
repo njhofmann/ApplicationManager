@@ -43,9 +43,20 @@ public interface EventData {
   String getEventLocation();
 
   /**
-   * Returns the date and time of this EventData's associated event as a String array in form of
-   * year, month, day, hour, and minute. Will be of length 6 long.
+   * Returns the date and time of this EventData's associated event as a Java LocalDateTime object.
    * @return date and time of this associated event
    */
   LocalDateTime getEventDateAndTime();
+
+  /**
+   * Returns the "final hour" of this EventData's current hour, 0 to 11 for AM, 12 to 11 for PM
+   * @return
+   */
+  int getFinalHour();
+
+  /**
+   * Returns the time convention of this EventData, either AM or PM as represented by a String.
+   * @return AM or PM
+   */
+  String getTimeConvention();
 }

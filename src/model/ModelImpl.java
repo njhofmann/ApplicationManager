@@ -1,5 +1,6 @@
 package model;
 
+import com.sun.javafx.geom.Area;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -460,6 +461,31 @@ public class ModelImpl implements ModelInterface {
     }
 
     return toReturn;
+  }
+
+  @Override
+  public AreaData getAreaData(int areaID) {
+    List<AreaData> areas = outputAreas();
+
+    for (AreaData areaData : areas) {
+      if (areaData.getAreaId() == areaID) {
+        return areaData;
+      }
+    }
+    throw new IllegalArgumentException("Model has no Area associated with given areaID!");
+  }
+
+  @Override
+  public EventData getEventData(int areaID, int eventID) {
+    List<EventData> events = outputEvents(areaID);
+
+    for (EventData eventData : events) {
+      if (eventData.getEventId() == eventID) {
+        return eventData;
+      }
+    }
+    throw new IllegalArgumentException("Area associated with given areaID has no Event associated"
+        + " with given eventID!");
   }
 
   @Override

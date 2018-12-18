@@ -1,5 +1,7 @@
 package main;
 
+import controller.Controller;
+import controller.ControllerInterface;
 import java.io.File;
 
 import javafx.application.Application;
@@ -35,7 +37,9 @@ public class RunApplicationManager extends Application {
     // Open associated model for editing
     model.openModelData();
 
-    view = new ViewImpl(model);
+    view = new ViewImpl();
+
+    ControllerInterface controller = new Controller(view, model);
 
     Scene scene = new Scene(view.asParent(), view.getWidth(), view.getHeight());
     primaryStage.setTitle("Application Manager");

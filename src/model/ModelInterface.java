@@ -99,9 +99,29 @@ public interface ModelInterface {
    * @param areaID
    * @return list of EventDatas representing all the events of a specific Area, as given by the ID
    *         of the given AreaData
-   * @throws IllegalArgumentException if given AreaData is null
+   * @throws IllegalArgumentException if given areaID is negative, or no Area in this model has an
+   *                                  ID associated with given ID
    */
   List<EventData> outputEvents(int areaID);
+
+  /**
+   *
+   * @param areaID
+   * @return
+   */
+  AreaData getAreaData(int areaID);
+
+  /**
+   * Returns the EventData of the given eventID, associated with the Area as per the areaID.
+   * @param areaID ID of the given Area to retrieve the EventData from
+   * @param eventID ID of EventData to retrieve
+   * @return EventData associated with the given eventID, that is associated with given Area, as per
+   *         given areaID
+   * @throws IllegalArgumentException if Area represented by given areaID has no Event associated
+   *          with given EventID, or if either given ID is negative or zero, or if model doesn't
+   *          contain Area with given ID
+   */
+  EventData getEventData(int areaID, int eventID);
 
   /**
    * Outputs the data of this ApplicationManager's data model as a String for other storage,

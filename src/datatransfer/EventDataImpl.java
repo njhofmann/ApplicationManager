@@ -105,4 +105,23 @@ public class EventDataImpl implements EventData {
   public LocalDateTime getEventDateAndTime() {
     return dateAndTime;
   }
+
+  @Override
+  public int getFinalHour() {
+    if (getTimeConvention().equals("PM") && 13 <= dateAndTime.getHour() &&
+        dateAndTime.getHour() <= 23) {
+      return dateAndTime.getHour() - 12;
+    }
+    return dateAndTime.getHour();
+  }
+
+  @Override
+  public String getTimeConvention() {
+    if (dateAndTime.getHour() < 12) {
+      return "AM";
+    }
+    else {
+      return "PM";
+    }
+  }
 }
